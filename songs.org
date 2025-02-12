@@ -1,0 +1,1355 @@
+# -*- mode: org; coding: utf-8; eval: (add-hook 'after-save-hook #'org-babel-tangle t t) -*-
+#+STARTUP: overview
+#+TITLE: Bass Music for Songs
+:DRAWER:
+#+OPTIONS: toc:nil html-postamble:nil
+#+HTML_HEAD_EXTRA: <style type="text/css">H1 {display: none;}</style>
+#+HTML_HEAD_EXTRA: <style type="text/css">SPAN.section-number-1 {display: none;}</style>
+#+HTML_HEAD_EXTRA: <style type="text/css">SPAN.section-number-2 {display: none;}</style>
+#+HTML_HEAD_EXTRA: <style type="text/css">SPAN.section-number-3 {display: none;}</style>
+#+HTML_HEAD_EXTRA: <style type="text/css">SPAN.section-number-4 {display: none;}</style>
+:END:
+
+* Copyrights
+Songs and their music are copyrighted by their authors.
+Anything mine is CC0.
+* Code
+#+NAME: lilypond
+#+begin_src emacs-lisp :var name="Weedeater-WizardFight.ly" :results output verbatim raw silent
+  (start-process "lilypond"
+		 "lilypond"
+		 "lilypond" name)
+#+end_src
+
+#+begin_src emacs-lisp :results silent
+  (defun call-sb ()
+     (interactive)
+     (org-sbe lilypond (name $"Kadavar-ComeBackLife.ly")))
+
+  (define-key org-mode-map (kbd "C-c z") #'call-sb)
+#+end_src
+
+#+NAME: lilypond2
+#+begin_src bash :var NAME="Kadavar-ComeBackLife.ly" :cache no :results output verbatim raw replace
+  exec 2>&1
+  #set -x -e
+  lilypond $NAME
+  :
+#+end_src
+
+#+NAME: explorer
+#+begin_src emacs-lisp :results silent
+(browse-url (expand-file-name default-directory))
+#+end_src
+* Test
+#+CALL: lilypond(name="test.ly")
+#+CALL: explorer()
+#+CALL: lilypond2(NAME="test.ly")
+
+#+RESULTS:
+
+#+begin_src LilyPond :tangle test.ly
+  \version "2.24.3"
+  \language "english"
+
+  \header {
+    title    = "Test"
+    arranger = "bass guitar, E Standard"
+  }
+
+  tuning = #bass-tuning
+  xtempo = 90
+
+  % zaa = \relative c, { e8.\2[e16\2] e8.\2[e16\2] e8.\2[e16\2] \tuplet 3/2 { g8\2(e\2) c\3 } } % 222222 523
+  % zab = \relative c, { c8.\3[c16\3] c8.\3[c16\3] c8.\3[c16\3] c8.\3[a16\3] } % 33333330
+  % zac = \relative c, { b8.\3[b16\3] b8.\3[b16\3] d8.\2[b16\3] d8.\2[d16\2] } % 22220200
+  % zad = \relative c, { e8.\2[d16\2] d8.\2[e16\2] ~ e8.\2[e16\2] e4\2\staccato }
+  zbm = \relative c, { e4\3 e\3 e8\3 e\3 e\3 e\3 } % 
+  zbp = \relative c, { e8\4[d\3] d\3[d\3] ~ d\3[d\3] \tuplet 3/2 { d8\3 b\4 a\3 } } % 75555 570
+  zbn = \relative c, { b4\4 \tuplet 3/2 { d8\3 b\4 a\3 } g'8\2[fs\2] d\3[e\3] } % 7 070 4507
+  zbx = \relative c, { e8\3[d\3] e\3[e\3] ~ e\3[e\3] } % 75777
+  zbr = \relative c, { \zbx \tuplet 3/2 { e8\3(d\2) a\3 } } % 700
+
+  music = {
+    \tempo 4 = \xtempo
+    \section
+    \sectionLabel "Test"
+    %\zaa ~ \zab | \zac | \zad |
+    \repeat volta 4 { \zbm ~ \zbp | \zbn ~ \zbr | }
+  }
+
+  \score {
+    <<
+      \new Staff {
+	\clef "bass_8"
+	\key c \major
+	\time 4/4
+	\music
+      }
+      \new TabStaff {
+	\set Staff.stringTunings = \tuning
+	\music
+      }
+    >>
+    \layout {
+      \context {
+	\Voice
+	\omit StringNumber
+      }
+      indent = 0.0
+    }
+  }
+  \score {
+    \unfoldRepeats
+    \music
+    \midi {
+      \set Staff.midiInstrument = "electric bass (finger)"
+    }
+  }
+#+end_src
+* Greenleaf
+** Trail & Passes
+#+CALL: lilypond(name="Greenleaf-TrailsAndPasses.ly")
+
+#+begin_src LilyPond :tangle Greenleaf-TrailsAndPasses.ly
+  \version "2.24.3"
+  \language "english"
+
+  \header {
+    title    = "Trails & Passes"
+    composer = "Greenleaf (bassist Bengt Bäcke)"
+    tuning   = "C Standard"
+  }
+
+  xtempo = 154
+  c-std-tuning = \stringTuning <c,, f,, as,, ds,>
+
+  %%      2 4 6  7  9 11
+  %% 1 D# F G A  A# C D
+  %% 2 A# C D E  F  G A
+  %% 3 F  G A B  C  D E
+  %% 4 C  D E F# G  A B
+
+  %% AINTRO (1-8) A
+
+  AIntro = {
+    \section
+    \sectionLabel "Intro"
+    \repeat volta 10 { r1^\markup "10×" }
+  }
+
+  %% BBUILD-UP (9-16) B
+
+  zba = \relative c, { c8\3 [c\3 c\3 c\3] c\3 [c\3 c\3 c\3] } %12
+
+  BBuildUp = {
+    \section
+    \sectionLabel "Build-up"
+    \repeat volta 5 { \zba^\markup "5×" } |
+  }
+
+  %% CINTRO (17-32) C
+
+  zca = \relative c, { as8\3 c\3 c\3 as\3 c\3 c\3 as\3 c\3 } % 17
+  zcb = \relative c, { c\3 as\3 c\3 c\3 as\3 c\3 c\3 f,\3 }  % 18
+
+  CIntro = {
+    \sectionLabel "Intro"
+    \repeat volta 8 { \zca \zcb^\markup "8×" } | \break
+  }
+
+  %% DPREVERSE (33-48) D
+
+  zda = \relative c,, { c8\4 c\4 c\4 c\4 c'\3 c\3 c\3 c\3 } % 33
+  %zdd = \relative c,, { c8\4 c\4 c\4 c\4 c'\3 c\3 c4\3 } % 36
+  zde = \relative c,, { ds8\4 ds ds ds ds ds ds ds } % 37
+  zdg = \relative c,, { f8\4 f\4 f\4 f\4 f\4 f\4 f\4 c'\3 } % 39
+  zdh = \relative c, { f8\2 f\2 f\2 f\2 ds\2 c\3 as\3 c\3 } % 40
+  zdi = \relative c, { f8\2 f\2 f\2 f\2 f\2 ds\2 c\3 as\3 } % 48
+
+  DPreVerse = {
+    \section
+    \sectionLabel "Pre-verse"
+    \repeat volta 2 {
+      \repeat volta 4 { \zda^\markup "4×" } |
+      \zde | \zde | \zdg | \zdh^\markup "2×" |
+    }
+    \break
+  }
+
+  %% EVERSE (49-72) E
+
+  zea = \relative c, { as8\3 c\3 c\3 as\3  c\3 c\3 as\3 c\3 } % (17)
+  zeb = \relative c, { c\3 as\3 c\3 c\3  as\3 c\3 c\3 f,\3 } % (18)
+
+  zec = \relative c, { as8\3 c\3 ds\2 c\3  ds\2 f\2 ds\2 f\2 } % 55
+  zed = \relative c, { g'8\2 c\1 as\1 g\2  fs\2 f\2 ds\2 c\3 } % 56
+  fill = { \zec | \zed | }
+
+  zee = \zde
+  zeg = \zdg
+  zeh = \relative c, { f8\2 f\2 f\2 f\2  ds\2 c\3 as\3 c\3 } % 108
+
+  Verse = {
+    \section
+    \sectionLabel "Verse"
+    \repeat volta 2 {
+      \repeat volta 3 { \zea | \zeb^\markup "3×" } | \fill | \break
+      \zee | \zee | \zeg | \zeh^\markup "2×" | \break
+    }
+  }
+
+  %% FCHORUS (73-88) F
+
+  zfa = \relative c, { c8\3 c\3 c\3 c\3 c\3 c\3 c\3 c\3 } % 73
+  zfb = \relative c, { c8\3 c\3 c\3 c\3 c\3 c\3 c\3 f,\3 } % 74
+  zfc = \relative c, { as8\3 as\3 as\3 as\3 as\3 as\3 as\3 as\3 } % 75
+  zfd = \relative c,, { f8\4 f\4 f\4 f\4 f\4 f\4 f\4 f\4 } % 77
+  zfe = \relative c,, { ds8\4 ds\4 ds\4 ds\4 f\4 f\4 f\4 f\4 } % 78
+  zff = \relative c, { c8\3 c\3 c\3 c\3  c\3 f\2 as\1 c\1 } % 169
+  zfg = \relative c { c8\1 as\1 g\2 as\1  c\1 as\1 g\2 ds\3 } % 170
+
+  Chorus = {
+    \section
+    \sectionLabel "Chorus"
+    \repeat volta 2 {
+      \zfa | \zfb |
+      \zfc | \zfc | \zfd | \zfe | \zff | \zfg^\markup "2×" | \break
+    }
+  }
+
+  %% GINTRO (89-96) G
+
+  zga = \relative c, { as8\3 c\3 c\3 as\3 c\3 c\3 as\3 c\3 } % (17)
+  zgb = \relative c, { c\3 as\3 c\3 c\3 as\3 c\3 c\3 f,\3 } % (18)
+
+  GIntro = {
+    \section
+    \sectionLabel "Intro"
+    \repeat volta 4 { \zga | <>_"Repeat Verse and Chorus" \zgb^\markup "4×" } | \break
+  }
+
+  %% KBRIDGE (137-152) K
+
+  zka = \relative c, { c,2\4 \glissando gs'2\4 ~ gs1\4 } % 137
+  zkb = \relative c, { f,2\3 \glissando c'2\3 ~ c1\3 } % 139
+  zkc = \relative c, { gs2\4 \glissando c,2\4 ~ c1\4 } % 143
+
+  KBridge = {
+    \section
+    \sectionLabel "Bridge"
+    \zka | \zkb | \zka | \zkc | \zka | \zkb | \zka |
+    \break
+  }
+
+  %% LSOLO (153-170) L
+
+  zla = \relative c, { g8\4 g\4 g\4 g\4 g\4 g\4 g\4 g\4 } % 151, 152
+  zlb = \zla
+  zlc = \zba % 155 (73, 81, 121)
+  zld = \relative c, { c8\3 [c\3 c\3 c\3] c\3 [c\3 c\3 f,\3] } %12 (74)
+  zle = \zfc % 157, 158 (75)
+  zlf = \zfd % 159 (77)
+  zlg = \zfe % 160 (78)
+  zlh = \zff %\relative c, { c8\3 c\3 c\3 c\3  c\3 c\3 f16\2 [as\1] c8\1 } % 169
+  zli = \zfg %\relative c { c8\1 [as\1 g\2 as\1]  c\1 [as\1 g\2 ds\3] } % 170
+
+  LSolo = {
+    \section
+    \sectionLabel "Solo"
+    \zla | \zla |
+    r1 | r1 |
+    \zlc | \zlc | \zle | \zle | \break
+    \zlf | \zlg |
+    \repeat volta 2 { { \zlc | \zld }^\markup "2×" } | \break
+    \zle | \zle | \zlf | \zlg | \zlh | \zli |
+    \break
+  }
+
+  %% MCHORUS (171-219) M
+
+  zma = \zba % 171 (161) 7s on 3rd
+  zmc = \zle  % 173, 174 (165, 166) 5s on 3rd x2
+  zmd = \relative c, { f8\2 f\2 f\2 f\2 f\2 f\2 f\2 f\2 } % 175, 7s on 2nd
+  zme = \relative c, { ds8\2 ds\2 ds\2 ds\2 f\2 f\2 f\2 f\2 } % 176, 5s 7s on 2nd
+  zmf = \zff %\relative c, { c8\3 c\3 c\3 c\3 c\3 c\3 f\2 g\2 } % 177 (79) 779 fill
+  zmg = \zfg %\relative c { as8\1 c\1 c\1 c\1  c\1 c\1 c\1 f,\2 } % 178 (80) 7997 fill
+
+  zmh = \relative c, {f1\2} % 219 () lone 7 on 2nd
+  zmi = \relative c, { as8\3 c\3 c\3 as\3 c\3 c\3 as\3 c\3 } % (17)
+  zmj = \relative c, { c\3 as\3 c\3 c\3 as\3 c\3 c\3 f,\3 } % (18)
+
+  MChorus = {
+    \section
+    \sectionLabel "Chorus"
+    \repeat volta 4 {
+      \zma | \zma | \zmc | \zmc |
+      \zmd | \zme | \zmf | \zmg^\markup{"4×"} | \break
+    }
+    \repeat volta 7 { \zmi | \zmj^\markup "7×" } | \fill | \zmh |
+  }
+
+  music = { \AIntro \BBuildUp
+	    \CIntro \DPreVerse %\pageBreak
+	    \Verse \Chorus
+	    \GIntro % \Verse \Chorus
+	    \KBridge \LSolo \MChorus
+	    \fine
+	  }
+
+  \score {
+    <<
+      \new Staff {
+	\clef "bass_8"
+	\key c \major
+	\time 4/4
+	\tempo 4 = \xtempo
+	\music
+      }
+      \new TabStaff {
+	\set Staff.stringTunings = #c-std-tuning
+	\music
+      }
+    >>
+    \layout {
+      \context {
+	\Voice
+	\omit StringNumber
+      }
+      indent = 0.0
+    }
+    %%\midi {}
+  }
+  \score {
+    \unfoldRepeats
+    \music
+    \midi {
+      \tempo 4 = \xtempo
+      \set Staff.midiInstrument = "electric bass (finger)"
+    }
+  }
+#+end_src
+* Jackson 5
+** I Want You Back (1969)
+#+CALL: lilypond(name="Jackson5-IWantYouBack.ly")
+
+#+begin_src LilyPond :tangle Jackson5-IWantYouBack.ly
+  \version "2.24.3"
+  \language "english"
+
+  \header {
+    title    = "I Want You Back"
+    composer = "Wilton Felder"
+    tuning   = "E Standard"
+  }
+
+  %% reference I started with was in the key b flat
+  xtempo = 98
+
+  %% INTRO
+  zaa = \relative e, { r1^"Intro" | }
+  %% m2
+  zab = \relative e, { bf8\4 r8 r4 r8. cs16 (d\3) [f\2 g\2 ef\3] | }
+  %zac = \relative e, { r2 r16 c d\3 ef\3 r16 e f fs | }
+  zac = \relative e, { r2 r16 c d\3 ef\3 (ef\3) e f fs | } %sbl
+  %% m4
+  zad = \relative e, { g4\2 d\3 ef8.\3 [bf16\4] (bf4) }
+  zae = \relative e, { c4\4 f8.\3 [bf,16\4] r2 }
+  %% m6
+  zaf = \zab
+  zag = \zac
+  %% m8
+  zah = \zad
+  zai = \relative e, {
+    %c8\4 r f8.\3 [bf,16\4]
+    c4\4 f8.\3 [bf,16\4] %sbl
+    r8 f'16\3 ([g\3]) bf\2 [g\3 bf8\2]
+  }
+  %% m10
+  zaj = \relative e {
+    bf8.\2 \ff [bf16\2] a8.\2 [a16\2] g\2 [g8\2 f16\3] (f\3) [d\3 f\3 d\3] | %sbl
+  }
+  zak = \relative e, {
+    ef8.\3 [ef16\3] d8.\3 [d16\3] c\4 [c8\4 f16\3] (f\3) [c\4 f\3 fs\3] | %sbl
+  }
+  %% m12
+  %%zal = \relative e, { g8.\2 [g16\2] d8\3 r ef8.\3 \f [bf16\4] r4 }
+  zal = \relative e, { g4\3 \glissando d4\3 ef8.\3 \f [bf16\4] (bf4) } %sbl
+  zam = \zai
+
+  intro = {
+    \zaa |
+    \zab | \zac | \zad | \zae \break |
+    \zaf | \zag | \zah | \zai \break |
+    \zaj | \zak | \zal | \zam \break |
+  }
+
+  %% VERSE1
+  %% m14
+  zba = \relative e, { bf8\4^"Verse 1" r8 r4 r8. cs16 d\3 [f\2 g\2 ef\3] | }
+  zbb = \zac
+  %% m16
+  zbc = \zad
+  zbd = \zai
+  %% m18
+  zbe = \zab
+  zbf = \zac
+  %% m20
+  zbg = \zad
+  zbh = \zai
+
+  verseOne = {
+    \zba | \zbb | \zbc | \zbd \break |
+    \zbe | \zbf | \zbg | \zbh \break |
+  }
+
+  %% CHORUS1
+  %% m22
+  zca = \relative e {
+    bf8.\2^"Chorus 1" \ff [bf16\2]
+    a8.\2 [a16\2]
+    g\2 [g8\2 f16\3]
+    (f\3) [d\3 f\3 d\3]
+  }
+  zcb = \zak
+  %% m24
+  zcc = \zal
+  zcd = \zai
+  %% m26
+  zce = \zaj
+  zcf = \zak
+  %% m26
+  zcg = \zal
+  zch = \relative e, { c4\4 f8\3 r }
+
+  chorusOne = {
+    \zca | \zcb | \zcc | \zcd \break |
+    \zce | \zcf | \zcg | \time 2/4 \zch \break |
+  }
+
+  %% INTRELUDE
+  %% m30
+  zda = \relative e, { r16^"Intrelude" bf\4 [bf\4 bf\4] bf\4 r8. r2 | }
+  zdb = \relative e, { r16 bf\4 [bf\4 bf\4] bf\4 r8. r2 | }
+  %% m32
+  zdc = \zdb
+  zdd = \zdb
+
+  intrelude = {
+    \time 4/4 \zda | \zdb | \zdc | \zdd \break |
+  }
+
+  %% VERSE2
+  %% m34
+  zea = \relative e, { bf8\4^"Verse 2" \f r8 r4 r8. cs16 d\3 [f\2 g\2 ef\3] | }
+  zeb = \zac
+  %% m36
+  zec = \zad
+  zed = \zai
+  %% m38
+  zee = \zab
+  zef = \zac
+  %% m40
+  zeg = \zad
+  zeh = \zai
+
+  verseTwo = {
+    \zea | \zeb | \zec | \zed \break |
+    \zee | \zef | \zeg | \zeh \break |
+  }
+
+  %% CHORUS2
+  %% m42
+  zfa = \relative e {
+    %bf8.\2^"Chorus 2" \ff [bf16\2] a8.\2 [a16\2] g\2 [g\2] r
+    %f\3 r d\3 [f\3 d\3] |
+    bf8.\2^"Chorus 2" \ff [bf16\2] a8.\2 [a16\2] g\2 [g8\2 f16\3] %sbl
+    (f\3) [d\3 f\3 b,\3] | %sbl
+  }
+  zfb = \relative e, {
+    %ef16\3 [bf'\2 ef\1 d,8\3 d16\3 d\3 c8\3 c16\3 c8\3]
+    %f16\2 [d\3 f\2 fs\2] |
+    ef16\3 [bf'\2 ef\1 d,\3] %sbl
+    (d8.\3) [c16\4] %sbl
+    (c\4) [fs,\4 c'\4 f\3] %sbl
+    (f\3) [fs,\4 f'\3 fs\3] | %sbl
+  }
+  %% m44
+  %zfc = \zal
+  zfc = \relative e, {
+    g4\3 \glissando d4\3
+    ef16\3 [d\3 c\4 bf\4]
+    (bf8) ([bf])
+  } %sbl
+  zfd = \zam
+  %% m46
+  zfe = \zaj
+  zff = \zak
+  %% m48
+  zfg = \zal
+
+  chorusTwo = {
+    \zfa | \zfb | \zfc | \zfd \break |
+    \zfe | \zff | \zfg \break |
+  }
+
+  %% BRIDGE
+  %% m49
+  zga = \relative e, { r1^"Bridge" }
+  %% m50
+  zgba = \relative e, { r16 g\2 [bf\2 d,\3] ~ d4\3 }
+  zgbb = \relative e, { r16 ef\3 [g\2 bf,\4] ~ bf4\4 }
+  zgb = { r2. \zgba \zgbb \zgba \zgbb r8. e,16\2 }
+  %% m53
+  %%zgc = \relative e, {
+  %%  g16\2 \ff [bf\2 d\1 d,\3] ~ d\3 \f [ f\3 \ff a\2 ef\3] ~
+  %%  ef\3 \f [g\2 \ff bf\2 bf,\4 ] ~ bf\4 [d\3 f\3] r16
+  %%}
+  zgc = \relative e, {
+    g16\2 \ff [bf\2 d\1 d,\3]        %sbl
+    (d\3) \f [ f\3 \ff a\2 ef\3]     %sbl
+    (ef\3) \f [g\2 \ff bf\2 bf,\4 ]  %sbl
+    (bf\4) [d\3 f\3 e\2]             %sbl
+  }
+  %% m54
+  zgd = \zgc
+  zge = \zgd
+  %% m56
+  %%zgf = \zgd
+  zgf = \relative e, {  % almost like \zgc
+    g16\2 \ff [bf\2 d\1 d,\3]        %sbl
+    (d\3) \f [ f\3 \ff a\2 ef\3]     %sbl
+    (ef\3) \f [g\2 \ff bf\2 bf,\4 ]  %sbl
+    (bf\4) [d\3 f8\3]                %sbl
+  }
+
+  bridge = {
+    \zga |
+    \zgb \break |
+    \zgc | \zgd | \zge | \zgf \break |
+  }
+
+  %% OUTRO
+  %% m57
+  zha = \relative e {
+    bf8.\2^"Outro" [bf16\2] a8.\2 [a16\2] g\2 [g\2] r f\3 r d\3 [f\3 d\3]
+  }
+  zhb = \zak
+  %% m59
+  zhc = \relative e, { g8.\2 [g16\2] d8\3 r ef8.\3 \f [bf16\4] r4 }
+  zhd = \zch
+  %% m61
+  zhe = \relative e, { r16 bf\4 \mf [bf\4 bf\4] bf\4 r8. r2 }
+  zhf = \relative e, {
+    r16 bf\4 [bf\4 bf\4] bf\4 r8. r4 f'16\3 [g\3 bf\2 g\3]
+  }
+  %% m63
+  zhg = \relative e {
+    bf8.\2 \ff [bf16\2] a8.\2 [a16\2] g\2 [g\2] r
+    f8 [f16 f] r16
+  }
+  zhh = \zfb
+  %% m65
+  zhi = \zfc
+  zhj = \zch
+  %% m67
+  zhk = \zhe
+  zhl = \zdb
+
+  outro = {
+    \zha | \zhb | \zhc | \time 2/4 \zhd \break |
+    \time 4/4 \zhe | \zhf \break |
+    \zhg | \zhh | \zhi | \time 2/4 \zhj \break |
+    \time 4/4 \zhk | \zhl \break |
+  }
+
+  musicA = { \intro |
+	    \verseOne |
+	    \chorusOne |
+	    \intrelude |
+	    \verseTwo |
+	    \chorusTwo |
+	    \bridge |
+	    \outro |
+	  }
+
+  music = \transpose bf af { \musicA }
+
+  \score {
+    <<
+      \new Staff {
+	\clef "bass_8"
+	\key af \major
+	\time 4/4
+	\tempo 4 = \xtempo
+	\music
+      }
+      \new TabStaff \with {
+	stringTunings = #bass-tuning
+      }	\music
+    >>
+    \layout {
+      \context {
+	\Voice
+	\omit StringNumber
+      }
+      indent = 0.0
+    }
+    %%\midi {}
+  }
+  \score {
+    \unfoldRepeats
+    \music
+    \midi {
+      \tempo 4 = \xtempo
+      \set Staff.midiInstrument = "electric bass (finger)"
+    }
+  }
+#+end_src
+* Kadavar
+** Come Back Life
+#+CALL: lilypond(name="Kadavar-ComeBackLife.ly")
+#+CALL: lilypond2(NAME="Kadavar-ComeBackLife.ly")
+
+#+begin_src LilyPond :tangle Kadavar-ComeBackLife.ly
+  \version "2.24.3"
+  \language "english"
+
+  \header {
+    title    = "Come Back Life"
+    subtitle = "Kadavar — Abra Kadavar"
+    composer = "bassist Philipp 'Mammut' Lippitz"
+    arranger = "bass guitar, E Standard"
+  }
+
+  %%|---+----+----+----+----+-----+----+----+----+----+----+----+----+-----|
+  %%|   |    | 1  | 2  | 3  | 4   | 5  | 6  | 7  | 8  | 9  | 10 | 11 | 12  |
+  %%| 1 | E2 | F2 | F# | G2 | G#  | A2 | A# | B2 | C3 | C# | D3 | D# | E3  |
+  %%| 2 | B1 | C2 | C# | D2 | D#  | E2 | F2 | F# | G2 | G# | A2 | A# | B2  |
+  %%| 3 | F# | G1 | G# | A1 | A#  | B1 | C2 | C# | D2 | D# | E2 | F2 | F#  |
+  %%| 4 | C# | D1 | D# | E1 | F1  | F# | G1 | G# | A1 | A# | B1 | C2 | C#  |
+  %%|   |    |    | oo |    | ooo |    | oo |    | oo |    |    |    | ooo |
+  %%|---+----+----+----+----+-----+----+----+----+----+----+----+----+-----|
+
+  xtempo = 145
+  %cs-std-tuning = \stringTuning <cs,, fs,, b,, e,>
+
+  %% ZA
+
+  zaa = \relative c, { d8\3 d\3 d\3 d\3  d\3 d\3 d\3 d\3 }     % 3:5555 5555
+  zab = \relative c, { d8\3 d\3 d\3 d\3  d\3 d\3 d\3 a\4 }  % 3:5555 555 4:5
+  zac = \relative c, { c8\3 c\3 r8 g\4  r8 g'\2 r8 d\3 }  % 33r3r5r5
+  zada = \relative c, { d8\3[d\3] d8.\3[d16\3] d8\3[d\3 d\3 a\4] } % 3:55 5.5 555 4:5
+  zadb = \relative c, { d8\3[d\3] d8.\3[d16\3] d8\3[d\3 d\3 d\3] }  % 3:55 5.5 5555
+  zae = \relative c, { d8\3[a\3 c\3] d4\3 a8\3[c\3 d\3] } % 3: 503 5 035
+  zaf = \relative c, { d8\3[a\3 c\3] d4\3 a8\3[c\3 a\3] } % 3: 503 5 030
+  zag = \relative c, { c8\3 c\3 c\3 c\3  c\3 c\3 c\3 c\3 }      % 3:3333 3333
+  zah = \relative c, { c8\3 c\3 c\3 c\3  c\3 c\3 c\3 a\3 }     % 3:3333 3330
+  zai = \relative c, { g8\4 g\4 g\4 g\4  g\4 g\4 g\4 g\4 }      % 4:3333 3333
+  zaj = \relative c, { g8\4 g\4 g\4 g\4  g\4 g\4 g\4 a\3 }   % 4:3333 333 3:0
+  zaka = \relative c, { d4\3 d8.\3[d16\3]  d8\3[d\3 d\3 d\3] }  % 3:5 5.5 5555
+  zakb = \relative c, { d4\3 d8.\3[d16\3]  d8\3[d\3 d\3 a\3] } % 3:5 5.5 5550
+  zal = \relative c, { c8\3 d\3 c\3  es4\2  es8\2 d\3 c\3 }      % 3:353 3 353
+  zam = \relative c, { a8\4[c\3 es\2] g4\2 as8\1 c4\1 } % 4:5 3:3 2:35 1:35
+  zan = \relative c, { g'8\2[es\2 d\3] b4\3 c8\3[b\3 d\3] } % 2:53 3:52325
+  zao = \relative c, { d8\3[d\3] d8.\3[d16\3] d8\3[d\3] d4\3 }   % 3:55 5.5 55 5
+  zap = \relative c, { d4\3 d8.\3[d16\3] d8\3[d\3] d8.\3[d16\3] } % 3:5 5.5 55 5.5
+  zaq = \relative c, { g'8\2[es\2 d\3] b4\3 c8\3[b\3 a\4] } % 2:53 3:5232 4:5
+  zar = \relative c, { a8\4 a\4 a\4 a\4  a\4 a\4 a\4 a\4 } % 4:5555 5555
+  zas = \relative c, { a8\4 a\4 a\4 a\4  a\4 a\4 a\4 e\4 } % 4:5555 5550
+
+  ZA = {
+    \tempo 4 = 145
+    %%\section
+    %%\sectionLabel "Intro"
+    \repeat volta 7 { \zaa^\markup "12×" } | \zab | \break
+    \repeat volta 2 { \zac ~ \zada^\markup "2×" } | \zac ~ \zadb | \break
+    \repeat volta 3 { \zaka^\markup "3×" } |
+    \repeat volta 4 { \zae ~ \zaf^\markup "4×" } |
+    \repeat volta 8 { \zaa^\markup "8×" } | \break
+    \zag | \zah | \zag | \zaj |
+    \repeat volta 2 { \zakb | \zal^\markup "2×" } | \break
+    \zag | \zah | \zai | \zaj |
+    \zakb | \zal | \zaka | \zaa |
+    \repeat volta 4 { \zae ~ \zaf^\markup "4×" } |
+    \repeat volta 16 { \zaa^\markup "16×" }
+    \repeat volta 2 { \zam | \zan | \zap | \zao^\markup "2×" | }
+    \zam | \zaq | \repeat volta 3 { \zar^\markup "3×" } | \zas |
+    \break
+  }
+
+  %% ZB
+
+  %% m88, tempo 89
+  zba = \relative c, { a8\4[\xNote a\4 a\4 \xNote a\4] a\4[\xNote a\4] a16\4[g8.\4] } % 4:5x5x 5x 5 4:3.
+  zbb = \relative c, { a8\4[\xNote a\4 a\4 \xNote a\4] a\4[\xNote a\4] a16\4[c8.\3] } % 4:5x5x 5x 5 3:3.
+  zbc = \relative c, { a8\4[\xNote a\4 a\4 \xNote a\4] a\4[\xNote a\4] g'16\2[a\1] c8\1 } % 4:5x5x 5x 2:5 1:25
+  zbd = \relative c, { \tuplet 3/2 { a\4 a\4 a\4 }
+		       \tuplet 3/2 { a\4 a\4 a\4 }
+		       \tuplet 3/2 { a\4 a\4 a\4 }
+		       \tuplet 3/2 { a\4 a\4 a\4 } } % 3: 555 555 555 555
+  zbe = \relative c, { \tuplet 3/2 { g\4 g\4 g\4 }
+		       \tuplet 3/2 { g\4 g\4 g\4 }
+		       \tuplet 3/2 { g\4 g\4 g\4 }
+		       \tuplet 3/2 { g\4 g\4 g\4 } } % 3: 333 333 333 333
+
+  ZB = {
+    \tempo 4 = 89
+    \zba | \zbb | \zba | \zbc | \break
+    \repeat volta 3 { \zba | \zbb^\markup "3×" } | \zba | \zbc |
+    \zbd | \zbe |
+    \break
+  }
+
+  %% ZC
+
+  %% m102, tempo 96
+  zca = \relative c, {
+    \tuplet 3/2 { b8\4 b\4 b\4 }
+    \tuplet 3/2 { b8\4 b\4 b\4 }
+    \tuplet 3/2 { b8\4 b\4 b\4 }
+    \tuplet 3/2 { b8\4 b\4 \glissando es\4 }
+  } % 3: 555 555 555 55-13
+  zcb = \relative c {
+    \tuplet 3/2 { as4\3 as\3 as\3 }
+    \tuplet 3/2 { as4\3 as\3 a,\4 }
+  } % 13-13-13 13-13-5
+
+  ZC = {
+    \tempo 4 = 96
+    \zca | \zcb |
+    \break
+  }
+
+  %% ZD
+  %% a-c b-d d-es e-g fs-a g-as
+
+  %% m104, tempo 145
+  zda = \relative c, { d4\3 d8.\3[d16\3] d8\3[d\3] d\3[d16\3 d\3] } % 3: 5 5.5 55 555
+  zdb = \relative c, { d8\3[d\3] d8\3[d16\3 d\3] d8\3[d\3 d\3 d\3] } % 3: 55 555 5555
+  zdd = \relative c, { d4\3 d8.\3[d16\3] d8\3[d\3 d\3 d\3] } % 
+  zde = \relative c, {
+    \tuplet 3/2 { d\3 d\3 d\3 }
+    \tuplet 3/2 { d\3 d\3 d\3 }
+    \tuplet 3/2 { d\3 d\3 d\3 }
+    \tuplet 3/2 { d\3 a'\1 c\1 }
+  } % t555 t555 t555 t5 1:25
+  zdg = \relative c {
+    \tuplet 3/2 { <d\1 d,\2> <d\1 d,\2> <d\1 d,\2> }
+    \tuplet 3/2 { <d\1 d,\2> <d\1 d,\2> <d\1 d,\2> }
+    \tuplet 3/2 { <d\1 d,\2> <d\1 d,\2> <d\1 d,\2> }
+    \tuplet 3/2 { <d\1 d,\2> d,\3 d\3 }
+  } % t70 70 70 - t70 70 70 - t70 70 70 - t70 5 5
+  zdk = \relative c, { d2\3 r2 }
+  zdl = \relative c, { c8\3 c\3 c\3 c\3  c\3 c\3 c\3 a\4 } % 3:3333 333 4:5
+  zdm = \relative c, { d8\3 d\3 d\3 d\3  d\3 d\3 d\3 a\4 } % 3:5555 555 4:5
+  zdn = \relative c, { g'\2 g\2 g\2 g\2  g\2 g\2 g\2 g\2 } % 2:5555 5555
+
+  zdo = \relative c, { c1\3 }
+  zdp = \relative c, { g1\4 }
+  zdq = \relative c, { d1\3 }
+
+  ZD = {
+    \tempo 4 = 145
+    \zda | \zdb | \zda | \zdd |
+    \zde | \zdg |
+    \repeat volta 6 { \zae ~ \zaf^\markup "6×" } |
+    \zdk | \repeat volta 7 { r1^\markup "7×" } | \break
+    \repeat volta 8 { \zae ~ \zaf^\markup "8×" } |
+    \zag | \zdl | \zai | \zai |
+    \repeat volta 3 { \zaa^\markup "3×" } | \zdm |
+    \zag | \zag |
+    \zdn | \zdn | \zaa | \zdm |
+    \zde |
+    \zdo ~ \zdo | \zdp ~ \zdp | \zdq ~ \zdq |
+  }
+
+  music = {
+    \ZA | \ZB | \ZC | \ZD |
+    \fine
+  }
+
+  \score {
+    <<
+      \new Staff {
+	\clef "bass_8"
+	\key c \major
+	\time 4/4
+	%%\tempo 4 = \xtempo
+	\music
+      }
+      \new TabStaff {
+	\set Staff.stringTunings = #bass-tuning
+	\music
+      }
+    >>
+    \layout {
+      \context {
+	\Voice
+	\omit StringNumber
+      }
+      indent = 0.0
+    }
+    %%\midi {}
+  }
+  \score {
+    \unfoldRepeats
+    \music
+    \midi {
+      %%\tempo 4 = \xtempo
+      \set Staff.midiInstrument = "electric bass (finger)"
+    }
+  }
+#+end_src
+** Dust
+#+CALL: lilypond(name="Kadavar-Dust.ly")
+#+CALL: explorer()
+#+CALL: lilypond2(NAME="Kadavar-Dust.ly")
+
+#+RESULTS:
+
+#+begin_src LilyPond :tangle Kadavar-Dust.ly
+  \version "2.24.3"
+  \language "english"
+
+  \header {
+    title    = "Dust"
+    subtitle = "Kadavar — Abra Kadavar"
+    composer = "bassist Philipp 'Mammut' Lippitz"
+    arranger = "bass guitar, E Standard"
+  }
+
+  tuning = #bass-tuning
+  xtempo = 145
+
+  %% INTRO
+
+  zaa = \relative c, { a'8\2[g\2] a\2[g\2] a4\2 a,8\4[b\4] } % 7575757
+  zab = \relative c, { d4\3 e\3 g8\2 e4.\3 } % 5757
+  zac = \relative c, { a2\4 b\4 } % 57
+  zad = \relative c, { d2\3 e\3\staccato } % 57'
+  zae = \relative c, { e8\3[e\3] \tuplet 3/2 { a\2 b\2 d\1 } e8\1[d\1] b16\2[a8.\2] } % 7 779 79797
+  zaf = \relative c, { e8\3[e\3] \tuplet 3/2 { a\2 b\2 d\1 } e8\1[e\1] \tuplet 3/2 { b\2 a\2 \glissando g\2 } } % 7 779 799 975
+  zag = \relative c, { e4\3 e\3 e\3 e8\3[b\4] } % 77777
+  zah = \relative c, { c8\4[c\4] c\4[c\4] c\4[c\4] c\4[a\4] } % 88888885
+  zai = \relative c, { b8\4[b\4] b\4[b\4] d\3[b\4] d\3[d\3] } % 77775755
+  zaj = \relative c, { e8\3[d\3] d\3[e\3] ~ e\3[e\3] e\3[a,\4] } % 7557775
+  zak = \relative c, { e8\3[e\3] e\3[e\3] e\3[e\3] \tuplet 3/2 { g\2(e\3) c\4 } } % 777777 078
+  zal = \relative c, { d8\3[e\3] e\3[e\3] e\3[e\3] e\3[e\3] } % 57777777
+  zam = \relative c, { d8\3[e\3] e\3[e\3] e\3[e\3] \tuplet 3/2 { e\3 e\3 e\3 } } % 577777 777
+  zan = \relative c, { d8\3[e\3] \tuplet 3/2 { e\3(d\3) b\4 } e\3 d4.\3 } % 57 757 75.
+  zao = \relative c, { e8\3[d\3] d\3[e\3] ~ e\3[e\3] e4\3\staccato } % 755777
+
+  intro = {
+    \tempo 4 = \xtempo
+    \section
+    \sectionLabel "Intro"
+    \repeat volta 2 { \zaa | \zab | \zac | \zad^\markup "2×" | }
+    \repeat volta 2 { \zae | \zaf^\markup "2×" | } \break
+    \zag | \zah | \zai | \zaj | \break
+    \zak ~ \zah | \zai | \zao | \break
+    \zal | \zal | \zam | \zan |
+  }
+
+  %% VERSE A
+
+  zba = \relative c, { e2.\3 d8\3[c\4] } % 7.58
+  zbb = \relative c, { c4\4 a8\4[a\4] ~ a\4[b\4] ~ b\4[a\4] } % 8-5575
+  %zbc = \relative c, { e8\3[d\3] e\3[e\3] e\3[e\3] e\3[e\3] } % 20222222
+  %zbd = \relative c, { e8\3[d\3] e\3[e\3] e\3[e\3] e\3[a,\4] } % 20222220
+  zbe = \relative c, { e4\3 \tuplet 3/2 { a,8\4(b\4) d\3 } e4\3 d8\3[c\4] } % 2 797 903
+  zbf = \relative c, { e4\3 \tuplet 3/2 { a8\2(b\2) d\1 } e4\1 g,8\1[c,\4] } % 2 797 903
+  zbg = \relative c, { g4\4 a\4 b\4 d\3 } % 3575
+  zbh = \relative c, { e4\3 g\2 e\3 d\3 } % 7575
+  zbi = \relative c, { e4\3 g\2 e\3 \tuplet 3/2 { d8\3 b\4(a\4) } } % 357575
+  zbj = \relative c, { d8\3[d\3] \tuplet 3/2 { b8\4(c\4)(cs\4) } d8\3[d\3] \tuplet 3/2 { b8\4(c\4)(cs\4) } } % 55 789 55 789
+  zbk = \relative c, { d8\3[d\3] \tuplet 3/2 { b\4(c\4)(cs\4) } d8\3[d\3] a4\4 } % 55 789 555
+  zbl = \relative c, { e8\3[d\3] e\3[e\3] e\3[e\3] \tuplet 3/2 { e8\3(d\3) a\4 } } % 757777 755
+  zbm = \relative c, { e4\3 e\3 e8\3[e\3] e\3[e\3] } % 777777
+  zbn = \relative c, { b4\4 \tuplet 3/2 { d8\3 b\4 a\3 } g'8\2[fs\2] d\3[e\3] } % 7 070 4507
+  zbo = \relative c, { e8\3[e\3] e\3[e\3] \tuplet 3/2 { e8\3 e\3 e\3 } e4\3 } % 7777 777 7
+  zbp = \relative c, { e8\4[d\3] d\3[d\3] ~ d\3[d\3] \tuplet 3/2 { d8\3 b\4 a\3 } } % 75555 570
+
+  zbx = \relative c, { e8\3[d\3] e\3[e\3] ~ e\3[e\3] } % 75777
+  zbq = \relative c, { \zbx d\2[d\2] } % 00
+  zdf = \relative c, { \zbx e\3[e\3] } % 77
+  zdi = \relative c, { \zbx e\3[a,\3] } % 70
+  zbr = \relative c, { \zbx \tuplet 3/2 { e8\3(d\2) a\3 } } % 700
+  zdk = \relative c, { \zbx \tuplet 3/2 { e8\3(d\3) a\3 } } % 770
+  zdg = \relative c, { \zbx \tuplet 3/2 { e8\3(d\2) a\3 } } % 700
+  zdh = \relative c, { \zbx \tuplet 3/2 { e8\3 a,\3 a\3 } } % 700
+  zdj = \relative c, { \zbx a\4[a\3] } % 70
+
+  verseA = {
+    \section
+    \sectionLabel "Verse 1 (0:39)"
+    \repeat volta 2 { \zba ~ \zbb | \zdf | \zdi^\markup "2×" | } \break
+    \repeat volta 2 { \zbf ~ \zbb | \zdf | \zdi^\markup "2×" | } \break
+    \zbg | \zbh | \zbg | \zbh | \break
+    \zbg | \zbi | \zbj | \zbk | \break
+    \zba ~ \zbb | \zdf | \zdi | \break
+    \zba ~ \zbb | \zdf | \zdk | \break
+    \zbe ~ \zbb | \zdf | \zdi | \break
+    \zbf ~ \zbb | \zdf | \zdi | \break
+
+    \zbm ~ \zbp | \zbn ~ \zbo | \break
+    \repeat volta 2 { \zbm ~ \zbp | \zbn ~ \zbq^\markup "2×" | } \break
+    \zbm ~ \zbp | \zbn ~ \zbr |
+  }
+
+  %% BRIDGE
+
+  zca = \relative c, { a8\3[a\3] a\3[a\3] a\3[a\3] a4\3\staccato } % 0000000.
+  zcb = \relative c, { b8\4[b\4] b\4[b\4] d\3[b\4] d\3[ds\3] } % 77775756
+  zcc = \relative c, { e8\3[e\3] g\2[fs\2] ~ fs\3[d\3] b\4[d\3] } % 7754575
+  zcd = \relative c, { e8\3[d\3] e\3[e\3] e\3[d\3] e4\3\staccato } % 7577777.
+  zce = \relative c, { e8\3[e\3] e\3[e\3] e\3[e\3] e\3[e\3] } % 77777777
+  zcf = \relative c, { d8\3[e\3] \tuplet 3/2 { e8\3(d\2) b\4 } e8\3 d4.\3 } % 57 707 75.
+  zcg = \relative c, { d8\2[e\3] e\3[e\3] e\3[e\3] e\3[b\4] } % 07777777
+  zch = \relative c, { e8\3[e\3] g\2[fs\2] ~ fs\3[d\3] e\3[d\3] } % 7754575
+
+  bridge = {
+    \section
+    \sectionLabel "Bridge (2:15)"
+    \zcg | \zca | \zcb | \zcc | \break
+    \zcd | \zca | \zcb | \zch | \break
+    \zce | \zal | \zal | \zcf |
+  }
+
+  %% VERSE B
+
+  zda = \relative c, { e8\3[d\3] d\3[d\3] ~ d\3[d\3] \tuplet 3/2 { d8\3 b\4 a\3 } } % 75555 570
+  zdb = \relative c, { b4\4 \tuplet 3/2 { d8\3(ds\3)(e\3) } g8\1[fs\2] d\3[e\3] } % 7 567 5457
+  zdc = \relative c, { c8\4[a\4] a\4[a\4] ~ a8\4 b4\4 a8\4 } % 855575
+  zdd = \relative c, { e2.\3 g8\2[c,\4] } % 7 58
+  zde = \relative c, { e8\3[d\3] d\3[d\3] d\3[d\3] \tuplet 3/2 { d8\3 b\4 a\3 } } % 75555 570
+
+  verseB = {
+    \section
+    \sectionLabel "Verse 2 (2:33)"
+    \zba ~ \zdc | \zdf | \zdi | \break
+    \zdd ~ \zdc | \zdf | \zdg | \break
+    \zbe ~ \zdc | \zdf | \zdg \break
+    \zbf ~ \zdc | \zdf | \zdh \break
+
+    \zbm ~ \zbp | \zdb ~ \zdj | \break
+    \zbm ~ \zda | \zbn ~ \zdj | \break
+    \zce ~ \zbp | \zbn ~ \zdj | \break
+    \zbm ~ \zde | \zbn ~ \zdk |
+  }
+
+  %% OUTRO
+
+  zea = \relative c, { e4\3 g\2 e\3 \tuplet 3/2 { d8\3 b\4(a\3) } } % 757 570
+  zeb = \relative c, { e8\3[e\3] e\3[e\3] e\3[e\3] \tuplet 3/2 { e8\3(d\2) c\4 } } % 777777 708
+  zec = \relative c, { c8\4[c\4] c\4[c\4] c\4[c\4] a\4[a\4] } % 88888855
+  zed = \relative c, { e8\3[d\3] d\3[e\3] ~ e\3[e\3] \tuplet 3/2 { e8\3(d\2) a\3 } } % 75577 500
+  zee = \relative c, { e8\3[e\3] e\3[e\3] e\3[e\3] \tuplet 3/2 { g8\2(d\2) c\4 } } % 777777 508
+  zef = \relative c, { e8\3[d\3] d\3[e\3] ~ e\3[e\3] a,4\4 } % 755775
+  zeg = \relative c, { e8\3[e\3] e\3[e\3] e\3[e\3] d\3[c\4] } % 22222203
+  zeh = \relative c, { e8\3[e\3] e\3[e\3] e\3[e\3] g\2[c,\4] } % 22222253
+  zei = \relative c, { e8\3[d\3] d\3[e\3] ~ e4\3 r4 } % 75577
+  zej = \relative c, { c8\4[c\4] c\4[c\4] c\4[c\4] a4\4 } % 8888885
+
+  outro = {
+    \section
+    \sectionLabel "Outro (3:27)"
+    \zbg | \zbh | \zbg | \zbh | \break
+    \zbg | \zea | \zbj | \zbk | \break
+    \zeb ~ \zec | \zai | \zed | \break
+    \zee ~ \zec | \zai | \zef | \break
+    \zeg ~ \zec | \zai | \zed | \break
+    \zeh ~ \zej | \zai | \zei | 
+  }
+
+  music = {
+    \intro | \break
+    \verseA | \break
+    \bridge | \break
+    \verseB | \break
+    \outro |
+    \fine }
+
+  \score {
+    <<
+      \new Staff {
+	\clef "bass_8"
+	\key c \major
+	\time 4/4
+	\music
+      }
+      \new TabStaff {
+	\set Staff.stringTunings = \tuning
+	\music
+      }
+    >>
+    \layout {
+      \context {
+	\Voice
+	\omit StringNumber
+      }
+      indent = 0.0
+    }
+  }
+  \score {
+    \unfoldRepeats
+    \music
+    \midi {
+      \set Staff.midiInstrument = "electric bass (finger)"
+    }
+  }
+#+end_src
+** Dust [20250209]
+#+CALL: explorer()
+#+CALL: lilypond(name="Kadavar-Dust.ly")
+#+CALL: lilypond2(NAME="Kadavar-Dust.ly")
+
+#+RESULTS:
+
+#+begin_src LilyPond #:tangle Kadavar-Dust.ly
+  \version "2.24.3"
+  \language "english"
+
+  \header {
+    title    = "Dust"
+    subtitle = "Kadavar — Abra Kadavar"
+    composer = "bassist Philipp 'Mammut' Lippitz"
+    arranger = "bass guitar, E Standard"
+  }
+
+  tuning = #bass-tuning
+  xtempo = 160
+
+  %% INTRO
+
+  zaa = \relative c, { a'8\2[g\2] a\2[g\2] a4\2 a,8\4[b\4] } % 7575757
+  zab = \relative c, { d4\3 e\3 g8\2 e4.\3 } % 5757
+  zac = \relative c, { a2\4 b\4 } % 57
+  zad = \relative c, { d2\3 e\3\staccato } % 57'
+  zae = \relative c, { e8\3[e\3] \tuplet 3/2 { a\2 b\2 d\1 } e8\1[d\1] b16\2[a8.\2] } % 7 779 79797
+  zaf = \relative c, { e8\3[e\3] \tuplet 3/2 { a\2 b\2 d\1 } e8\1[e\1] \tuplet 3/2 { b\2 a\2 \glissando g\2 } } % 7 779 799 975
+  zag = \relative c, { e4\2 e\2 e\2 e8\2[b\3] } % 22222
+  zah = \relative c, { c8\3[c\3] c\3[c\3] c\3[c\3] c\3[a\3] } % 33333330
+  zai = \relative c, { b8\3[b\3] b\3[b\3] d\2[b\3] d\2[d\2] } % 22220200
+  zaj = \relative c, { e8\2[d\2] d\2[e\2] ~ e\2[e\2] e\2[a,\3] } % 2002220
+  zak = \relative c, { e8\2[e\2] e\2[e\2] e\2[e\2] \tuplet 3/2 { g\1(e\2) c\3 } } % 222222 523
+  zal = \relative c, { d8\2[e\2] e\2[e\2] e\2[e\2] e\2[e\2] } % 02222222
+  zam = \relative c, { d8\2[e\2] e\2[e\2] e\2[e\2] \tuplet 3/2 { e\2 e\2 e\2 } } % 022222 222
+  zan = \relative c, { d8\2[e\2] \tuplet 3/2 { e\2(d\2) b\3 } e\2 d4.\2 } % 0220220
+  zao = \relative c, { e8\2[d\2] d\2[e\2] ~ e\2[e\2] e4\2\staccato }
+
+  intro = {
+    \tempo 4 = \xtempo
+    \section
+    \sectionLabel "Intro"
+    \repeat volta 2 { \zaa | \zab | \zac | \zad^\markup "2×" | }
+    \repeat volta 2 { \zae | \zaf^\markup "2×" | } \break
+    \zag | \zah | \zai | \zaj | \break
+    \zak ~ \zah | \zai | \zao | \break
+    \zal | \zal | \zam | \zan |
+  }
+
+  %% VERSE A
+
+  zba = \relative c, { e2.\2 d8\2[c\3] } % 2 03
+  zbb = \relative c, { c4\3 a8\3[a\3] ~ a\3[b\3] ~ b\3[a\3] } % 30020
+  %zbc = \relative c, { e8\2[d\2] e\2[e\2] e\2[e\2] e\2[e\2] } % 20222222
+  zbd = \relative c, { e8\2[d\2] e\2[e\2] e\2[e\2] e\2[a,\3] } % 20222220
+  zbe = \relative c, { e4\2 \tuplet 3/2 { a8\2(b\2) d\1 } e4\1 d,8\2[c\3] } % 2 797 903
+  zbf = \relative c, { e4\2 \tuplet 3/2 { a8\2(b\2) d\1 } e4\1 g,8\1[c,\3] } % 2 797 903
+  zbg = \relative c, { g4\4 a\3 b\3 d\2 } % 3020
+  zbh = \relative c, { e4\2 g\1 e\2 d\2 } % 2020
+  zbi = \relative c, { e4\2 g\1 e\2 \tuplet 3/2 { d8\2 b\3(a\3) } } % 202020
+  zbj = \relative c, { d8\2[d\2] \tuplet 3/2 { b8\3(c\3)(cs\3) } d8\2[d\2] \tuplet 3/2 { b8\3(c\3)(cs\3) } } % 00 234 00 234
+  zbk = \relative c, { d8\2[d\2] \tuplet 3/2 { b\3(c\3)(cs\3) } d8\2[d\2] a4\3 } % 00 234 000
+  zbl = \relative c, { e8\2[d\2] e\2[e\2] e\2[e\2] \tuplet 3/2 { e8\2(d\2) a\3 } } % 202222 200
+  zbm = \relative c, { e4\2 e\2 e8\2[e\2] e\2[e\2] } % 222222
+  zbn = \relative c, { b4\3 \tuplet 3/2 { d8\2 b\3 a\3 } g'8\2[fs\2] d\2[e\2] } % 2 020 5402
+  zbo = \relative c, { e8\2[e\2] e\2[e\2] \tuplet 3/2 { e8\2 e\2 e\2 } e4 } % 2222 222 2
+  zbp = \relative c, { e8\2[d\2] d\2[d\2] ~ d\2[d\2] \tuplet 3/2 { d8\2 b\3 a\3 } } % 20000 020
+
+  zbx = \relative c, { e8\2[d\2] e\2[e\2] ~ e\2[e\2] }
+  zbq = \relative c, { \zbx d\2[d\2] } % 22222200
+  zdf = \relative c, { \zbx e\2[e\2] } % 202222
+  zdi = \relative c, { \zbx e\2[a,\3] } % 2022220
+  zbr = \relative c, { \zbx \tuplet 3/2 { e8\2(d\2) a\3 } } % 222222 200
+  zdk = \relative c, { \zbx \tuplet 3/2 { e8\2(d\2) a\3 } } % 2022220
+  zdg = \relative c, { \zbx \tuplet 3/2 { e8\2(d\2) a\3 } } % 202222 200
+  zdh = \relative c, { \zbx \tuplet 3/2 { e8\2 a,\3 a\3 } } % 202222 200
+  zdj = \relative c, { \zbx a\3[a\3] } % 2022220
+
+  verseA = {
+    \section
+    \sectionLabel "Verse 1 (0:39)"
+    \repeat volta 2 { \zba ~ \zbb | \zdf | \zdi^\markup "2×" | } \break
+    \repeat volta 2 { \zbf ~ \zbb | \zdf | \zdi^\markup "2×" | } \break
+    \zbg | \zbh | \zbg | \zbh | \break
+    \zbg | \zbi | \zbj | \zbk | \break
+    \zba ~ \zbb | \zdf | \zdi | \break
+    \zba ~ \zbb | \zdf | \zdk | \break
+    \zbe ~ \zbb | \zdf | \zdi | \break
+    \zbf ~ \zbb | \zdf | \zdi | \break
+
+    \zbm ~ \zbp | \zbn ~ \zbo | \break
+    \repeat volta 2 { \zbm ~ \zbp | \zbn ~ \zbq^\markup "2×" | } \break
+    \zbm ~ \zbp | \zbn ~ \zbr |
+  }
+
+  %% BRIDGE
+
+  zca = \relative c, { a8\3[a\3] a\3[a\3] a\3[a\3] a4\3\staccato } % 0000000.
+  zcb = \relative c, { b8\3[b\3] b\3[b\3] d\2[b\3] d\2[ds\2] } % 22220201
+  zcc = \relative c, { e8\2[e\2] g\2[fs\2] ~ fs\2[d\2] b\3[d\2] } % 2254020
+  zcd = \relative c, { e8\2[d\2] e\2[e\2] e\2[d\2] e4\2\staccato } % 2022222.
+  zce = \relative c, { e8\2[e\2] e\2[e\2] e\2[e\2] e\2[e\2] } % 22222222
+  zcf = \relative c, { d8\2[e\2] \tuplet 3/2 { e8\2(d\2) b\3 } e8 d4. } % 02 202 20.
+  zcg = \relative c, { d8\2[e\2] e\2[e\2] e\2[e\2] e\2[b\3] } % 02222222
+  zch = \relative c, { e8\2[e\2] g\2[fs\2] ~ fs\2[d\2] e\2[d\2] } % 2254020
+
+  bridge = {
+    \section
+    \sectionLabel "Bridge (2:15)"
+    \zcg | \zca | \zcb | \zcc | \break
+    \zcd | \zca | \zcb | \zch | \break
+    \zce | \zal | \zal | \zcf |
+  }
+
+  %% VERSE B
+
+  zda = \relative c, { e8\2[d\2] d\2[d\2] ~ d\2[d\2] \tuplet 3/2 { d8\2 b\3 a\3 } } % 20000 020
+  zdb = \relative c, { b4\3 \tuplet 3/2 { d8\2(ds\2)(e\2) } g8\1[fs\2] d\2[e\2] } % 2 012 0402
+  zdc = \relative c, { c8\3[a\3] a\3[a\3] ~ a8\3 b4\3 a8\3 } % 300020
+  zdd = \relative c, { e2.\2 g8\1[c,\3] } % 2 03
+  zde = \relative c, { e8\2[d\2] d\2[d\2] d\2[d\2] \tuplet 3/2 { d8\2 b\3 a\3 } } % 20000 020
+
+  verseB = {
+    \section
+    \sectionLabel "Verse 2 (2:33)"
+    \zba ~ \zdc | \zdf | \zdi | \break
+    \zdd ~ \zdc | \zdf | \zdg | \break
+    \zbe ~ \zdc | \zdf | \zdg \break
+    \zbf ~ \zdc | \zdf | \zdh \break
+
+    \zbm ~ \zbp | \zdb ~ \zdj | \break
+    \zbm ~ \zda | \zbn ~ \zdj | \break
+    \zce ~ \zbp | \zbn ~ \zdj | \break
+    \zbm ~ \zde | \zbn ~ \zdk |
+  }
+
+  %% OUTRO
+
+  zea = \relative c, { e4\2 g\1 e\2 \tuplet 3/2 { d8\2 b\3(a\3) } } % 202 020
+  zeb = \relative c, { e8\2[e\2] e\2[e\2] e\2[e\2] \tuplet 3/2 { e8\2(d\2) c\3 } } % 222222 203
+  zec = \relative c, { c8\3[c\3] c\3[c\3] c\3[c\3] a\3[a\3] } % 33333300
+  zed = \relative c, { e8\2[d\2] d\2[e\2] ~ e\2[e\2] \tuplet 3/2 { e8\2(d\2) a\3 } } % 20022 200
+  zee = \relative c, { e8\2[e\2] e\2[e\2] e\2[e\2] \tuplet 3/2 { g8\2(d\2) c\3 } } % 222222 503
+  zef = \relative c, { e8\2[d\2] d\2[e\2] ~ e\2[e\2] a,4\3 } % 200220
+  zeg = \relative c, { e8\2[e\2] e\2[e\2] e\2[e\2] d\2[c\3] } % 22222203
+  zeh = \relative c, { e8\2[e\2] e\2[e\2] e\2[e\2] g\2[c,\3] } % 22222253
+  zei = \relative c, { e8\2[d\2] d\2[e\2] ~ e4 r4 } % 2002
+  zej = \relative c, { c8\3[c\3] c\3[c\3] c\3[c\3] a4\3 } % 3333330
+
+  outro = {
+    \section
+    \sectionLabel "Outro (3:27)"
+    \zbg | \zbh | \zbg | \zbh | \break
+    \zbg | \zea | \zbj | \zbk | \break
+    \zeb ~ \zec | \zai | \zed | \break
+    \zee ~ \zec | \zai | \zef | \break
+    \zeg ~ \zec | \zai | \zed | \break
+    \zeh ~ \zej | \zai | \zei | 
+  }
+
+  music = {
+    \intro | \break
+    \verseA | \break
+    \bridge | \break
+    \verseB | \break
+    \outro | \fine }
+
+  \score {
+    <<
+      \new Staff {
+	\clef "bass_8"
+	\key c \major
+	\time 4/4
+	\music
+      }
+      \new TabStaff {
+	\set Staff.stringTunings = \tuning
+	\music
+      }
+    >>
+    \layout {
+      \context {
+	\Voice
+	\omit StringNumber
+      }
+      indent = 0.0
+    }
+  }
+  \score {
+    \unfoldRepeats
+    \music
+    \midi {
+      \set Staff.midiInstrument = "electric bass (finger)"
+    }
+  }
+#+end_src
+* Weedeater
+** ... And Justice For Y'all (2000)
+*** Monkey Junction
+#+CALL: lilypond(name="Weedeater-MonkeyJunction.ly")
+
+#+begin_src LilyPond :tangle Weedeater-MonkeyJunction.ly
+  \version "2.24.3"
+  \language "english"
+
+  \header {
+    title    = "Monkey Junction"
+    composer = "Weedeater: Dave Collins, Dave Shepherd"
+    tuning   = "D Standard"
+  }
+
+  d-std-tuning = \stringTuning <d,, g,, c, f,>
+  ztempo = 140
+
+  v = \relative d,, { d4. c'8\3 [d\3 c\3] 
+		      a4\4 c2\3
+		      gs4.\4
+		      d8 f4 g8\4 gs4\4 g8\4 f4 g8\4 d4
+		      c'8\3 [d\3 c\3] 
+		      a4\4 c2\3 |
+		      gs1\4 ~ gs1\4
+		      \fine
+		    }
+
+  music = \v
+
+  \score {
+    <<
+      \new Staff {
+	\clef "bass_8"
+	\key c \major
+	\time 6/8
+	\tempo 4 = \ztempo
+	\music
+      }
+      \new TabStaff {
+	\set Staff.stringTunings = #d-std-tuning
+	{ \music }
+      }
+    >>
+    \layout {
+      \context {
+	\Voice
+	\omit StringNumber
+      }
+    }
+    %%\midi {}
+  }
+  \score {
+    \unfoldRepeats
+    \music
+    \midi {
+      \tempo 4 = \ztempo
+      \set Staff.midiInstrument = "electric bass (finger)"
+    }
+  }
+#+end_src
+*** Hungry Jack
+*** Truck Drivin' Man
+** Sixteen Tons (2002)
+*** Woe's Me
+*** Kira May
+** God Luck and Good Speed (2007)
+*** Wizard Fight
+#+CALL: lilypond(name="Weedeater-WizardFight.ly")
+
+#+begin_src LilyPond :tangle Weedeater-WizardFight.ly
+  \version "2.24.3"
+  \language "english"
+
+  \header {
+    title = "Wizard Fight"
+    composer = "Weedeater: Dave Collins, Dave Shepherd"
+    tuning = "D Standard"
+  }
+
+  d-std-tuning = \stringTuning <d,, g,, c, f,>
+
+  zai = \relative d,, { d8 d d c'\3 \glissando d4\3 }  % 00057
+  zaj = \relative d, { d8\3 [c\3 a\4] c\3 [a\4 d\3] }  % 757577
+  zak = \relative d, { as4. c4.\3 }  % 35
+
+  za = {
+    \repeat volta 2 {
+      \repeat volta 3 { \zai | \zai | \zai | \zaj^\markup "3×" }
+      { \zai | \zai | \zai | \zak^\markup "2×" }
+    }
+  }
+
+  zbl = \relative d,, { d4 d8 [d] d [d] | }  % 0 0000
+  zbm = \relative d, { c4.\3 as4.\3 | }  % 5.3.
+  zbn = \relative d,, { f4.\4 g4.\4 }  % 3.5.
+
+  zb = {
+    \repeat volta 2 {
+      \repeat volta 3 { \zbl | \zbm | \zbn^\markup "3×" }
+      { \zbm | \zbn | \zbm | \zbn^\markup "2×" }
+    }
+  }
+
+  zco = \relative d,, { g8\4 [g\4 g\4] g\4 [g\4 g\4] | }  % 555 555
+
+  music = {
+    \repeat volta 2 {
+      {
+	\za | \break
+	\zb | \break
+      }
+      \alternative {
+	\volta 1 { \zco | \zco | }
+	\volta 2 { r1. }
+      }
+    }
+    \fine
+  }
+
+  \score {
+    <<
+      \new Staff {
+	\clef "bass_8"
+	\key c \major
+	\time 6/8
+	\tempo 4=226
+	\music
+      }
+      \new TabStaff {
+	\set Staff.stringTunings = #d-std-tuning
+	{ \music }
+      }
+    >>
+    \layout {
+      \context {
+	\Voice
+	\omit StringNumber
+      }
+    }
+    %%\midi {}
+  }
+  %%\score {
+  %%  \unfoldRepeats
+  %%  \music
+  %%  \midi {
+  %%    \tempo 4=226
+  %%    \set Staff.midiInstrument = "electric bass (finger)"
+  %%  }
+  %%}
+#+end_src
+*** It Is What It Is
+*** Weed Monkey
+** Jason .. The Dragon (2011)
+*** Jason ... The Dragon
+** Goliathan (2015)
+* v
