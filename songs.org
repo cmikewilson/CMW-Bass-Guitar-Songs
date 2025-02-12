@@ -36,14 +36,8 @@ Anything mine is CC0.
   lilypond $NAME
   :
 #+end_src
-
-#+NAME: explorer
-#+begin_src emacs-lisp :results silent
-(browse-url (expand-file-name default-directory))
-#+end_src
 * Test
 #+CALL: lilypond(name="test.ly")
-#+CALL: explorer()
 #+CALL: lilypond2(NAME="test.ly")
 
 #+RESULTS:
@@ -803,7 +797,6 @@ Anything mine is CC0.
 #+end_src
 ** Dust
 #+CALL: lilypond(name="Kadavar-Dust.ly")
-#+CALL: explorer()
 #+CALL: lilypond2(NAME="Kadavar-Dust.ly")
 
 #+RESULTS:
@@ -1000,7 +993,6 @@ Anything mine is CC0.
   }
 #+end_src
 ** Dust [20250209]
-#+CALL: explorer()
 #+CALL: lilypond(name="Kadavar-Dust.ly")
 #+CALL: lilypond2(NAME="Kadavar-Dust.ly")
 
