@@ -861,7 +861,7 @@ Anything mine is CC0.
   zbf = \relative c, { e4\3 \tuplet 3/2 { a8\2(b\2) d\1 } e4\1 g,8\1[c,\4] } % 2 797 903
   zbg = \relative c, { g4\4 a\4 b\4 d\3 } % 3575
   zbh = \relative c, { e4\3 g\2 e\3 d\3 } % 7575
-  zbi = \relative c, { e4\3 g\2 e\3 \tuplet 3/2 { d8\3 b\4(a\4) } } % 357575
+  zbi = \relative c, { e4\3 g\2 e\3 \tuplet 3/2 { d8\3 b\4(a\3) } } % 357570
   zbj = \relative c, { d8\3[d\3] \tuplet 3/2 { b8\4(c\4)(cs\4) } d8\3[d\3] \tuplet 3/2 { b8\4(c\4)(cs\4) } } % 55 789 55 789
   zbk = \relative c, { d8\3[d\3] \tuplet 3/2 { b\4(c\4)(cs\4) } d8\3[d\3] a4\4 } % 55 789 555
   zbl = \relative c, { e8\3[d\3] e\3[e\3] e\3[e\3] \tuplet 3/2 { e8\3(d\3) a\4 } } % 757777 755
@@ -878,7 +878,7 @@ Anything mine is CC0.
   zdk = \relative c, { \zbx \tuplet 3/2 { e8\3(d\3) a\3 } } % 770
   zdg = \relative c, { \zbx \tuplet 3/2 { e8\3(d\2) a\3 } } % 700
   zdh = \relative c, { \zbx \tuplet 3/2 { e8\3 a,\3 a\3 } } % 700
-  zdj = \relative c, { \zbx a\4[a\3] } % 70
+  zdj = \relative c, { \zbx a\3[a\3] } % 00
 
   verseA = {
     \section
@@ -940,7 +940,7 @@ Anything mine is CC0.
 
   %% OUTRO
 
-  zea = \relative c, { e4\3 g\2 e\3 \tuplet 3/2 { d8\3 b\4(a\3) } } % 757 570
+  %%zea = \relative c, { e4\3 g\2 e\3 \tuplet 3/2 { d8\3 b\4(a\3) } } % 757 570
   zeb = \relative c, { e8\3[e\3] e\3[e\3] e\3[e\3] \tuplet 3/2 { e8\3(d\2) c\4 } } % 777777 708
   zec = \relative c, { c8\4[c\4] c\4[c\4] c\4[c\4] a\4[a\4] } % 88888855
   zed = \relative c, { e8\3[d\3] d\3[e\3] ~ e\3[e\3] \tuplet 3/2 { e8\3(d\2) a\3 } } % 75577 500
@@ -955,7 +955,7 @@ Anything mine is CC0.
     \section
     \sectionLabel "Outro (3:27)"
     \zbg | \zbh | \zbg | \zbh | \break
-    \zbg | \zea | \zbj | \zbk | \break
+    \zbg | \zbi | \zbj | \zbk | \break
     \zeb ~ \zec | \zai | \zed | \break
     \zee ~ \zec | \zai | \zef | \break
     \zeg ~ \zec | \zai | \zed | \break
