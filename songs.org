@@ -1,6 +1,7 @@
-# -*- mode: org; coding: utf-8; eval: (add-hook 'after-save-hook #'org-babel-tangle t t) -*-
+# -*- mode: org; coding: utf-8; -*-
 #+STARTUP: overview
 #+TITLE: Bass Music for Songs
+#+Time-stamp: <2025-03-11 08:41:58 cmike>
 :DRAWER:
 #+OPTIONS: toc:nil html-postamble:nil
 #+HTML_HEAD_EXTRA: <style type="text/css">H1 {display: none;}</style>
@@ -21,12 +22,15 @@ Anything mine is CC0.
 		 "lilypond" name)
 #+end_src
 
-#+begin_src emacs-lisp :results silent
-  (defun call-sb ()
+# not working
+#+NAME: call-lilypond
+#+begin_src emacs-lisp :var name="Kadavar-Dust.ly" :results silent
+  (defun call-lilypond ()
      (interactive)
-     (org-sbe lilypond (name $"Kadavar-ComeBackLife.ly")))
-
-  (define-key org-mode-map (kbd "C-c z") #'call-sb)
+     ;(start-process "lilypond" "lilypond" "lilypond" name)
+     (string-equal "Kadavar-ComeBackLife.ly" name)
+     )
+  (define-key org-mode-map (kbd "C-c l") #'call-lilypond)
 #+end_src
 
 #+NAME: lilypond2
@@ -41,6 +45,20 @@ Anything mine is CC0.
 #+CALL: lilypond2(NAME="test.ly")
 
 #+RESULTS:
+Processing `test.ly'
+Parsing...
+Interpreting music...
+Preprocessing graphical objects...
+Interpreting music...
+test.ly:35:22: warning: barcheck failed at: 1/2
+  \zak ~ \zah | \zai 
+                     | \zao | \break
+MIDI output to `test.midi'...
+Finding the ideal number of pages...
+Fitting music on 1 page...
+Drawing systems...
+Converting to `test.pdf'...
+Success: compilation successfully completed
 
 #+begin_src LilyPond :tangle test.ly
   \version "2.24.3"
@@ -58,18 +76,26 @@ Anything mine is CC0.
   % zab = \relative c, { c8.\3[c16\3] c8.\3[c16\3] c8.\3[c16\3] c8.\3[a16\3] } % 33333330
   % zac = \relative c, { b8.\3[b16\3] b8.\3[b16\3] d8.\2[b16\3] d8.\2[d16\2] } % 22220200
   % zad = \relative c, { e8.\2[d16\2] d8.\2[e16\2] ~ e8.\2[e16\2] e4\2\staccato }
-  zbm = \relative c, { e4\3 e\3 e8\3 e\3 e\3 e\3 } % 
-  zbp = \relative c, { e8\4[d\3] d\3[d\3] ~ d\3[d\3] \tuplet 3/2 { d8\3 b\4 a\3 } } % 75555 570
-  zbn = \relative c, { b4\4 \tuplet 3/2 { d8\3 b\4 a\3 } g'8\2[fs\2] d\3[e\3] } % 7 070 4507
-  zbx = \relative c, { e8\3[d\3] e\3[e\3] ~ e\3[e\3] } % 75777
-  zbr = \relative c, { \zbx \tuplet 3/2 { e8\3(d\2) a\3 } } % 700
+  % zbm = \relative c, { e4\3 e\3 e8\3 e\3 e\3 e\3 } % 
+  % zbp = \relative c, { e8\4[d\3] d\3[d\3] ~ d\3[d\3] \tuplet 3/2 { d8\3 b\4 a\3 } } % 75555 570
+  % zbn = \relative c, { b4\4 \tuplet 3/2 { d8\3 b\4 a\3 } g'8\2[fs\2] d\3[e\3] } % 7 070 4507
+  % zbx = \relative c, { e8\3[d\3] e\3[e\3] ~ e\3[e\3] } % 75777
+  % zbr = \relative c, { \zbx \tuplet 3/2 { e8\3(d\2) a\3 } } % 700
+  zak = \relative c, {
+    e4\3 e8\3 e4\3 e8\3 e4\3 e8\3
+    \tuplet 3/3 {g8\2(e\3) c\4}
+  } % 777777 078
+  zah = \relative c, {c4\4 c8\4 c4\4 c8\4 c4\4 c8\4 c4\4 a8\4} % 88888885
+  zai = \relative c, {b4\4 b8\4 b4\4 b8\4 d4\3 b8\4 d4\3 d8\3} % 77775755
+  zao = \relative c, {e4\3 d8\3 d4\3 e8\3 ~ e4\3 e8\3 e4.\3\staccato} % 755777
 
   music = {
     \tempo 4 = \xtempo
     \section
     \sectionLabel "Test"
     %\zaa ~ \zab | \zac | \zad |
-    \repeat volta 4 { \zbm ~ \zbp | \zbn ~ \zbr | }
+    %\repeat volta 4 { \zbm ~ \zbp | \zbn ~ \zbr | }
+    \zak ~ \zah | \zai | \zao | \break
   }
 
   \score {
@@ -77,7 +103,7 @@ Anything mine is CC0.
       \new Staff {
 	\clef "bass_8"
 	\key c \major
-	\time 4/4
+	\time 12/8
 	\music
       }
       \new TabStaff {
@@ -800,7 +826,7 @@ Anything mine is CC0.
 #+CALL: lilypond2(NAME="Kadavar-Dust.ly")
 
 #+RESULTS:
-
+*** Header
 #+begin_src LilyPond :tangle Kadavar-Dust.ly
   \version "2.24.3"
   \language "english"
@@ -809,12 +835,14 @@ Anything mine is CC0.
     title    = "Dust"
     subtitle = "Kadavar — Abra Kadavar"
     composer = "bassist Philipp 'Mammut' Lippitz"
-    arranger = "bass guitar, E Standard"
+    arranger = "bass guitar, E Standard, kind of 12/8 or swing"
   }
 
   tuning = #bass-tuning
   xtempo = 145
-
+#+end_src
+*** Intro
+#+begin_src LilyPond :tangle Kadavar-Dust.ly
   %% INTRO
 
   zaa = \relative c, { a'8\2[g\2] a\2[g\2] a4\2 a,8\4[b\4] } % 7575757
@@ -843,33 +871,32 @@ Anything mine is CC0.
     \zak ~ \zah | \zai | \zao | \break
     \zal | \zal | \zam | \zan |
   }
-
+#+end_src
+*** Verse A
+#+begin_src LilyPond :tangle Kadavar-Dust.ly
   %% VERSE A
 
   zba = \relative c, { e2.\3 d8\3[c\4] } % 7.58
   zbb = \relative c, { c4\4 a8\4[a\4] ~ a\4[b\4] ~ b\4[a\4] } % 8-5575
-  %zbc = \relative c, { e8\3[d\3] e\3[e\3] e\3[e\3] e\3[e\3] } % 20222222
-  %zbd = \relative c, { e8\3[d\3] e\3[e\3] e\3[e\3] e\3[a,\4] } % 20222220
   zbe = \relative c, { e4\3 \tuplet 3/2 { a,8\4(b\4) d\3 } e4\3 d8\3[c\4] } % 2 797 903
   zbf = \relative c, { e4\3 \tuplet 3/2 { a8\2(b\2) d\1 } e4\1 g,8\1[c,\4] } % 2 797 903
   zbg = \relative c, { g4\4 a\4 b\4 d\3 } % 3575
   zbh = \relative c, { e4\3 g\2 e\3 d\3 } % 7575
-  zbi = \relative c, { e4\3 g\2 e\3 \tuplet 3/2 { d8\3 b\4(a\3) } } % 357570
+  zbi = \relative c, { e4\3 g\2 e\3 \tuplet 3/2 { d8\3 b\4(a\4) } } % 357570
   zbj = \relative c, { d8\3[d\3] \tuplet 3/2 { b8\4(c\4)(cs\4) } d8\3[d\3] \tuplet 3/2 { b8\4(c\4)(cs\4) } } % 55 789 55 789
   zbk = \relative c, { d8\3[d\3] \tuplet 3/2 { b\4(c\4)(cs\4) } d8\3[d\3] a4\4 } % 55 789 555
   zbl = \relative c, { e8\3[d\3] e\3[e\3] e\3[e\3] \tuplet 3/2 { e8\3(d\3) a\4 } } % 757777 755
   zbm = \relative c, { e4\3 e\3 e8\3[e\3] e\3[e\3] } % 777777
-  zbn = \relative c, { b4\4 \tuplet 3/2 { d8\3 b\4 a\3 } g'8\2[fs\2] d\3[e\3] } % 7 070 4507
+  zbn = \relative c, { b4\4 \tuplet 3/2 { d8\3 b\4 a\4 } g'8\2[fs\2] d\3[e\3] } % 7 070 4507
   zbo = \relative c, { e8\3[e\3] e\3[e\3] \tuplet 3/2 { e8\3 e\3 e\3 } e4\3 } % 7777 777 7
-  zbp = \relative c, { e8\4[d\3] d\3[d\3] ~ d\3[d\3] \tuplet 3/2 { d8\3 b\4 a\3 } } % 75555 570
+  zbp = \relative c, { e8\3[d\3] d\3[d\3] ~ d\3[d\3] \tuplet 3/2 { d8\3 b\4 a\4 } } % 75555 575
 
   zbx = \relative c, { e8\3[d\3] e\3[e\3] ~ e\3[e\3] } % 75777
-  zbq = \relative c, { \zbx d\2[d\2] } % 00
+  zbq = \relative c, { \zbx d\3[d\3] } % 00
   zdf = \relative c, { \zbx e\3[e\3] } % 77
   zdi = \relative c, { \zbx e\3[a,\3] } % 70
-  zbr = \relative c, { \zbx \tuplet 3/2 { e8\3(d\2) a\3 } } % 700
+  zbr = \relative c, { \zbx \tuplet 3/2 { e8\3(d\3) a\3 } } % 700
   zdk = \relative c, { \zbx \tuplet 3/2 { e8\3(d\3) a\3 } } % 770
-  zdg = \relative c, { \zbx \tuplet 3/2 { e8\3(d\2) a\3 } } % 700
   zdh = \relative c, { \zbx \tuplet 3/2 { e8\3 a,\3 a\3 } } % 700
   zdj = \relative c, { \zbx a\3[a\3] } % 00
 
@@ -889,16 +916,18 @@ Anything mine is CC0.
     \repeat volta 2 { \zbm ~ \zbp | \zbn ~ \zbq^\markup "2×" | } \break
     \zbm ~ \zbp | \zbn ~ \zbr |
   }
-
+#+end_src
+*** Bridge
+#+begin_src LilyPond :tangle Kadavar-Dust.ly
   %% BRIDGE
 
-  zca = \relative c, { a8\3[a\3] a\3[a\3] a\3[a\3] a4\3\staccato } % 0000000.
+  zca = \relative c, { a8\4[a\4] a\4[a\4] a\4[a\4] a4\4\staccato } % 0000000.
   zcb = \relative c, { b8\4[b\4] b\4[b\4] d\3[b\4] d\3[ds\3] } % 77775756
   zcc = \relative c, { e8\3[e\3] g\2[fs\2] ~ fs\3[d\3] b\4[d\3] } % 7754575
   zcd = \relative c, { e8\3[d\3] e\3[e\3] e\3[d\3] e4\3\staccato } % 7577777.
   zce = \relative c, { e8\3[e\3] e\3[e\3] e\3[e\3] e\3[e\3] } % 77777777
-  zcf = \relative c, { d8\3[e\3] \tuplet 3/2 { e8\3(d\2) b\4 } e8\3 d4.\3 } % 57 707 75.
-  zcg = \relative c, { d8\2[e\3] e\3[e\3] e\3[e\3] e\3[b\4] } % 07777777
+  zcf = \relative c, { d8\3[e\3] \tuplet 3/2 { e8\3(d\3) b\4 } e8\3 d4.\3 } % 57 757 75.
+  zcg = \relative c, { d8\3[e\3] e\3[e\3] e\3[e\3] e\3[b\4] } % 07777777
   zch = \relative c, { e8\3[e\3] g\2[fs\2] ~ fs\3[d\3] e\3[d\3] } % 7754575
 
   bridge = {
@@ -908,36 +937,39 @@ Anything mine is CC0.
     \zcd | \zca | \zcb | \zch | \break
     \zce | \zal | \zal | \zcf |
   }
-
+#+end_src
+*** Verse B
+#+begin_src LilyPond :tangle Kadavar-Dust.ly
   %% VERSE B
 
-  zda = \relative c, { e8\3[d\3] d\3[d\3] ~ d\3[d\3] \tuplet 3/2 { d8\3 b\4 a\3 } } % 75555 570
-  zdb = \relative c, { b4\4 \tuplet 3/2 { d8\3(ds\3)(e\3) } g8\1[fs\2] d\3[e\3] } % 7 567 5457
+  %zda = \relative c, { e8\3[d\3] d\3[d\3] ~ d\3[d\3] \tuplet 3/2 { d8\3 b\4 a\4 } } % 75555 575
+  zdb = \relative c, { b4\4 \tuplet 3/2 { d8\3(ds\3)(e\3) } g8\2[fs\2] d\3[e\3] } % 7 567 5457
   zdc = \relative c, { c8\4[a\4] a\4[a\4] ~ a8\4 b4\4 a8\4 } % 855575
   zdd = \relative c, { e2.\3 g8\2[c,\4] } % 7 58
-  zde = \relative c, { e8\3[d\3] d\3[d\3] d\3[d\3] \tuplet 3/2 { d8\3 b\4 a\3 } } % 75555 570
+  zde = \relative c, { e8\3[d\3] d\3[d\3] d\3[d\3] \tuplet 3/2 { d8\3 b\4 a\4 } } % 75555 575
 
   verseB = {
     \section
     \sectionLabel "Verse 2 (2:33)"
     \zba ~ \zdc | \zdf | \zdi | \break
-    \zdd ~ \zdc | \zdf | \zdg | \break
-    \zbe ~ \zdc | \zdf | \zdg \break
+    \zdd ~ \zdc | \zdf | \zbr | \break
+    \zbe ~ \zdc | \zdf | \zbr \break
     \zbf ~ \zdc | \zdf | \zdh \break
 
     \zbm ~ \zbp | \zdb ~ \zdj | \break
-    \zbm ~ \zda | \zbn ~ \zdj | \break
+    \zbm ~ \zbp | \zbn ~ \zdj | \break
     \zce ~ \zbp | \zbn ~ \zdj | \break
     \zbm ~ \zde | \zbn ~ \zdk |
   }
-
+#+end_src
+*** Outro
+#+begin_src LilyPond :tangle Kadavar-Dust.ly
   %% OUTRO
 
-  %%zea = \relative c, { e4\3 g\2 e\3 \tuplet 3/2 { d8\3 b\4(a\3) } } % 757 570
-  zeb = \relative c, { e8\3[e\3] e\3[e\3] e\3[e\3] \tuplet 3/2 { e8\3(d\2) c\4 } } % 777777 708
+  zeb = \relative c, { e8\3[e\3] e\3[e\3] e\3[e\3] \tuplet 3/2 { e8\3(d\3) c\4 } } % 777777 708
   zec = \relative c, { c8\4[c\4] c\4[c\4] c\4[c\4] a\4[a\4] } % 88888855
-  zed = \relative c, { e8\3[d\3] d\3[e\3] ~ e\3[e\3] \tuplet 3/2 { e8\3(d\2) a\3 } } % 75577 500
-  zee = \relative c, { e8\3[e\3] e\3[e\3] e\3[e\3] \tuplet 3/2 { g8\2(d\2) c\4 } } % 777777 508
+  zed = \relative c, { e8\3[d\3] d\3[e\3] ~ e\3[e\3] \tuplet 3/2 { e8\3(d\3) a\3 } } % 75577 750
+  zee = \relative c, { e8\3[e\3] e\3[e\3] e\3[e\3] \tuplet 3/2 { g8\2 d\3 c\4 } } % 777777 508
   zef = \relative c, { e8\3[d\3] d\3[e\3] ~ e\3[e\3] a,4\4 } % 755775
   zeg = \relative c, { e8\3[e\3] e\3[e\3] e\3[e\3] d\3[c\4] } % 22222203
   zeh = \relative c, { e8\3[e\3] e\3[e\3] e\3[e\3] g\2[c,\4] } % 22222253
@@ -954,7 +986,9 @@ Anything mine is CC0.
     \zeg ~ \zec | \zai | \zed | \break
     \zeh ~ \zej | \zai | \zei | 
   }
-
+#+end_src
+*** Footer
+#+begin_src LilyPond :tangle Kadavar-Dust.ly
   music = {
     \intro | \break
     \verseA | \break
@@ -1148,4 +1182,103 @@ Anything mine is CC0.
 ** Jason .. The Dragon (2011)
 *** Jason ... The Dragon
 ** Goliathan (2015)
+* Rosin the Beau
+#+CALL: lilypond(name="RosinTheBeau.ly")
+#+CALL: lilypond2(NAME="RosinTheBeau.ly")
+
+#+RESULTS:
+** Header
+#+begin_src LilyPond :tangle RosinTheBeau.ly
+  \version "2.24.3"
+  \language "english"
+
+  \header {
+    title    = "Rosin the Beau"
+    subtitle = "Traditional"
+    composer = "bass guitar, E Standard"
+    arranger = "(Patrick Costello)"
+  }
+
+  tuning = #bass-tuning
+  xtempo = 80
+#+end_src
+** Main
+#+begin_src LilyPond :tangle RosinTheBeau.ly
+  %% INTRO
+
+  %% | d3 | g2  | b1a1g1 | d1    | e1 b1g1 |
+  %% |    | g2  | b1a1g1 | e3 ga | e dg    |
+  %% |    | g   | bag    | d'    | e1bg    |
+  %% |    | g   | g4g3a3 | g     | g d'd,  |
+  %% |    | dbd | def#   | g' e  | g' e    |
+  %% |    | dbd | gab    | e ga  | e d     |
+  %% |    | g   | bag    | d'    | e bg    |
+  %% |    | g   | g4g3a3 | g     | g d     |
+
+  zaa = \relative c, { r4 r4 d4\3 }
+  zab = \relative c, { g'2.\2 }
+  zac = \relative c, { b'4\2 a\2 g\2 }
+  zad = \relative c, { d'2.\1 }
+  zae = \relative c, { e'2\1 b8\2(a\2) }
+  zaf = \relative c, { e2\3 g8\2(a\2) }
+  zag = \relative c, { e2\3 d4\3 }
+  zah = \relative c, { e4\3 g\2 a\2 }
+
+  zai = \relative c, { d'4\1 b\2 d\1 }
+  zaj = \relative c, { d'4\1 e\1 fs\1 }
+  zak = \relative c, { g''2\1 e4\1}
+  zal = \relative c, { d'4\1 b\1 a\1 }
+  zap = \relative c, { g'\2 a\1 b\1  }
+  zam = \relative c, { e2\3 g8\2 a\2 }
+  zan = \relative c, { e2\3 d4\3 }
+  zao = \relative c, { e2\1 d4\3 }
+
+  music = {
+    \tempo 4 = \xtempo
+    %%\section
+    %%\sectionLabel "Intro"
+    \time 3/4
+    \zaa |
+    \zab | \zac | \zad | \zae |
+    \zab | \zac | \zaf | \zag | \break
+    \zab | \zac | \zad | \zae |
+    \zab | \zah | \zab | \zab | \break
+
+    \zai | \zaj | \zak | \zak |
+    \zal | \zap | \zam | \zan | \break
+    \zab | \zac | \zad | \zae |
+    \zab | \zah | \zab | \zab |
+    \fine
+  }
+#+end_src
+** Footer
+#+begin_src LilyPond :tangle RosinTheBeau.ly
+  \score {
+    <<
+      \new Staff {
+	\clef "bass_8"
+	\key c \major
+	\music
+      }
+      \new TabStaff {
+	\set Staff.stringTunings = \tuning
+	\music
+      }
+    >>
+    \layout {
+      \context {
+	\Voice
+	\omit StringNumber
+      }
+      indent = 0.0
+    }
+  }
+  \score {
+    \unfoldRepeats
+    \music
+    \midi {
+      \set Staff.midiInstrument = "electric bass (finger)"
+    }
+  }
+#+end_src
 * v
