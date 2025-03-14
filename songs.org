@@ -1,7 +1,7 @@
 # -*- mode: org; coding: utf-8; -*-
 #+STARTUP: overview
 #+TITLE: Bass Music for Songs
-#+Time-stamp: <2025-03-11 08:41:58 cmike>
+#+Time-stamp: <2025-03-14 06:55:48 cmike>
 :DRAWER:
 #+OPTIONS: toc:nil html-postamble:nil
 #+HTML_HEAD_EXTRA: <style type="text/css">H1 {display: none;}</style>
@@ -1181,6 +1181,140 @@ Success: compilation successfully completed
 *** Weed Monkey
 ** Jason .. The Dragon (2011)
 *** Jason ... The Dragon
+#+CALL: lilypond(name="Weedeater-Jason.ly")
+#+CALL: lilypond2(NAME="Weedeater-Jason.ly")
+
+#+RESULTS:
+**** Sources
+- Beholden to the Riff - 3 Massive Doom & Stoner Bass Riffs [20200906]
+  + https://www.youtube.com/watch?v=Brm_3L0Wruw
+**** Notes
+|---+----+----+----+----+----+-----+----+----+----+----+----+----+-----|
+|   |    | 1  | 2  | 3  | 4  | 5   | 6  | 7  | 8  | 9  | 10 | 11 | 12  |
+| 1 | F2 | F# | G2 | G# | A2 | A#  | B2 | C3 | C# | D3 | D# | E3 | F3  |
+| 2 | C2 | C# | D2 | D# | E2 | F2  | F# | G2 | G# | A2 | A# | B2 | C3  |
+| 3 | G1 | G# | A1 | A# | B1 | C2  | C# | D2 | D# | E2 | F2 | F# | G2  |
+| 4 | D1 | D# | E1 | F1 | F# | G1  | G# | A1 | A# | B1 | C2 | C# | D2  |
+|   |    |    |    | oo |    | ooo |    | oo |    | oo |    |    | ooo |
+|---+----+----+----+----+----+-----+----+----+----+----+----+----+-----|
+
+-- a --
+   g
+-- f --
+   e
+-- d --
+   c
+-- b --
+   a
+-- g --
+   f
+ - e -
+**** LY Header
+#+begin_src LilyPond :tangle Weedeater-Jason.ly
+  \version "2.24.3"
+  \language "english"
+
+  \header {
+    title    = "Jason ... The Dragon"
+    subtitle = "Weedeater — Jason ... The Dragon"
+    composer = "bassist Dave Collins"
+    arranger = "bass guitar, D Standard"
+  }
+
+  d-std-tuning = \stringTuning <d,, g,, c, f,>
+#+end_src
+**** Opening Riff
+#+begin_src LilyPond :tangle Weedeater-Jason.ly
+  zaa = \relative c, { d8\3[d,\4] d'\3[d,\4] d'\3[d,\4] } % (1) 707070 3/4
+  zab = \relative c, { d8\3[c\3] a\4[c\3] a\4[c\3] } % (2) 757575
+  zac = \relative c, { a8\4[gs\4] g\4[f\4] } % (3) 7653 2/4,
+  zad = \relative c, { c16\3 \glissando d\3[d,8\4] d'\3[d,\4] d'\3[d,\4] } % (4) 5707070
+  zae = \relative c, { d8\3[c\3] a\4[c\3] a\4[c\3] } % (5) 757575
+
+  opening = {
+    \section
+    \sectionLabel "Opening Riff"
+    \tempo 4 = 130
+    \time 3/4 \zaa | \zab | \time 2/4 \zac |
+    \repeat volta 2 { \time 3/4 \zad | \zae | \time 2/4 \zac } |
+  }
+#+end_src
+**** Mid Riff
+#+begin_src LilyPond :tangle Weedeater-Jason.ly
+  zba = \relative c, {
+    d,8\4 ~ d16\4[d\4] f\4(d\4) d8\4 ~ [d\4] <d'\3 a'\2> ~ <d\3 a'\2>
+  } % 00300 97 4/8
+  zbb = \relative c, { d,8\4 ~ d\4 d\4 f\4\^ fqs d\4 } % 0030
+  zbc = \relative c, { g16\4[a\4] c\3[d\3] c\3[a\4] g\4[f\4] } % 57575753
+  zbd = \relative c, { d16\3[cs\3] c\3[a\4] d\3[cs\3] c\3[a\4] } %76577657
+
+  mid = {
+    \section
+    \sectionLabel "Mid Riff"
+    \tempo 4 = 140
+    \repeat volta 2 {
+      \time 7/8 \zba | \time 6/8 \zbb | \time 4/8 \zbc |
+      \time 7/8 \zba | \time 6/8 \zbb | \time 4/8 \zbd |
+    }
+  }
+#+end_src
+**** Final Riff
+#+begin_src LilyPond :tangle Weedeater-Jason.ly
+  zca = \relative c, { gs16\4[gs\4] gs\4[g\4] ~ g\4[g\4] g\4[g\4] } % 6665555
+  zcb = \relative c, { g16\4[d\4] f\4[d\4] gs\4[g\4] f\4[d\4] } % 50306530
+  zcc = \zbd % 76577657
+  zcd = \relative c, { gs16\4[gs\4] gs\4[g\4] \glissando d\4 r8 }
+
+  final = {
+    \section
+    \sectionLabel "Final Riff"
+    \tempo 4 = 140
+    \repeat volta 8 { \time 2/4 \zca | \zcb | } % x8
+    \repeat volta 8 { \zcc | } % x8
+  }
+  finalb = {
+    \zcd
+  }
+#+end_src
+**** LY Sequence
+#+begin_src LilyPond :tangle Weedeater-Jason.ly
+  music = {
+    \opening \break
+    \mid \break
+    \final \finalb \fine
+  }
+#+end_src
+**** LY Footer
+#+begin_src LilyPond :tangle Weedeater-Jason.ly
+  \score {
+    <<
+      \new Staff {
+	\clef "bass_8"
+	\key c \major
+	\time 3/4
+	\music
+      }
+      \new TabStaff {
+	\set Staff.stringTunings = \d-std-tuning
+	\music
+      }
+    >>
+    \layout {
+      \context {
+	\Voice
+	\omit StringNumber
+      }
+      indent = 0.0
+    }
+  }
+  \score {
+    \unfoldRepeats
+    \music
+    \midi {
+      \set Staff.midiInstrument = "electric bass (finger)"
+    }
+  }
+#+end_src
 ** Goliathan (2015)
 * Rosin the Beau
 #+CALL: lilypond(name="RosinTheBeau.ly")
