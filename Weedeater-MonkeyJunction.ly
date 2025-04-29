@@ -10,25 +10,26 @@
 d-std-tuning = \stringTuning <d,, g,, c, f,>
 ztempo = 140
 
-v = \relative d,, { d4. c'8\3 [d\3 c\3] 
-		    a4\4 c2\3
-		    gs4.\4
-		    d8 f4 g8\4 gs4\4 g8\4 f4 g8\4 d4
-		    c'8\3 [d\3 c\3] 
-		    a4\4 c2\3 |
-		    gs1\4 ~ gs1\4
-		    \fine
-		  }
+zaa = \relative d,, { d4. c'8\3 [d\3 c\3] }
+zab = \relative d,, { a'4\4 c2\3 }
+zac = \relative d,, { gs4.\4 d8 f4 }
+zad = \relative d,, { g8\4 gs4\4 g8\4 f4 }
+zae = \relative d,, { g8\4 d4 c'8\3[d\3 c\3] }
+zaf = \relative d,, { a'4\4 c2\3 }
+zag = \relative d,, { gs2.\4 ~ gs2.\4 }
 
-music = \v
+music = {
+  \key c \major
+  \time 6/8
+  \tempo 4 = \ztempo
+  \zaa | \zab | \zac | \zad | \zae | \zaf | \zag |
+  \fine
+}
 
 \score {
   <<
     \new Staff {
       \clef "bass_8"
-      \key c \major
-      \time 6/8
-      \tempo 4 = \ztempo
       \music
     }
     \new TabStaff {
