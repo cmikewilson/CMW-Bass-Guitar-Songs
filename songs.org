@@ -1,7 +1,7 @@
 # -*- mode: org; coding: utf-8; -*-
 #+STARTUP: overview
 #+TITLE: Bass Music for Songs
-#+Time-stamp: <2025-04-21 18:06:16 cmike>
+#+Time-stamp: <2025-04-29 04:38:01 cmike>
 :DRAWER:
 #+OPTIONS: toc:nil html-postamble:nil
 #+HTML_HEAD_EXTRA: <style type="text/css">H1 {display: none;}</style>
@@ -39,6 +39,8 @@ Anything mine is CC0.
   #set -x -e
   lilypond $NAME
   :
+  rm -f songs.pdf
+  pdfunite *.pdf songs.pdf &
 #+end_src
 * Test
 #+CALL: lilypond(name="test.ly")
@@ -153,9 +155,18 @@ Success: compilation successfully completed
 - page breaks ::
   + \pageBreak
   + \noPageBreak
+- vibrato ::
+  + \prall
+- grace notes ::
+  + \grace c
+  + \appoggiatura c (with slur mark)
+- misc
+  + \xNote
 * Greenleaf
 ** Trail & Passes
-#+CALL: lilypond(name="Greenleaf-TrailsAndPasses.ly")
+#+CALL: lilypond2(NAME="Greenleaf-TrailsAndPasses.ly")
+
+#+RESULTS:
 
 #+begin_src LilyPond :tangle Greenleaf-TrailsAndPasses.ly
   \version "2.24.3"
@@ -377,7 +388,9 @@ Success: compilation successfully completed
 #+end_src
 * Jackson 5
 ** I Want You Back (1969)
-#+CALL: lilypond(name="Jackson5-IWantYouBack.ly")
+#+CALL: lilypond2(NAME="Jackson5-IWantYouBack.ly")
+
+#+RESULTS:
 
 #+begin_src LilyPond :tangle Jackson5-IWantYouBack.ly
   \version "2.24.3"
@@ -656,6 +669,8 @@ Success: compilation successfully completed
 ** Come Back Life
 #+CALL: lilypond(name="Kadavar-ComeBackLife.ly")
 #+CALL: lilypond2(NAME="Kadavar-ComeBackLife.ly")
+
+#+RESULTS:
 
 #+begin_src LilyPond :tangle Kadavar-ComeBackLife.ly
   \version "2.24.3"
@@ -1061,19 +1076,6 @@ Success: compilation successfully completed
 #+CALL: lilypond2(NAME="Sleep-Dragonaut.ly")
 
 #+RESULTS:
-#+begin_example
-Processing `Sleep-Dragonaut.ly'
-Parsing...
-Interpreting music...[8][16][24][32][40][48][56][64]
-Preprocessing graphical objects...
-Interpreting music...
-MIDI output to `Sleep-Dragonaut.midi'...
-Finding the ideal number of pages...
-Fitting music on 2 or 3 pages...
-Drawing systems...
-Converting to `Sleep-Dragonaut.pdf'...
-Success: compilation successfully completed
-#+end_example
 *** Sources
 - Beholden to the Riff - Dragonaut by Sleep [20210530]
   + https://www.youtube.com/watch?v=Hn8azfOIvG0
@@ -1499,19 +1501,6 @@ Success: compilation successfully completed
 #+CALL: lilypond2(NAME="Sleep-GizaButler.ly")
 
 #+RESULTS:
-#+begin_example
-Processing `Sleep-GizaButler.ly'
-Parsing...
-Interpreting music...
-Preprocessing graphical objects...
-Interpreting music...
-MIDI output to `Sleep-GizaButler.midi'...
-Finding the ideal number of pages...
-Fitting music on 1 page...
-Drawing systems...
-Converting to `Sleep-GizaButler.pdf'...
-Success: compilation successfully completed
-#+end_example
 *** Sources
 - Beholden to the Riff - SLEEP - Giza Butler Pt. 1 [20201101]
   + https://www.youtube.com/watch?v=Hn8azfOIvG0
@@ -1612,19 +1601,6 @@ Success: compilation successfully completed
 #+CALL: lilypond2(NAME="Weedeater-MonkeyJunction.ly")
 
 #+RESULTS:
-#+begin_example
-Processing `Weedeater-MonkeyJunction.ly'
-Parsing...
-Interpreting music...[8]
-Preprocessing graphical objects...
-Interpreting music...
-MIDI output to `Weedeater-MonkeyJunction.midi'...
-Finding the ideal number of pages...
-Fitting music on 1 page...
-Drawing systems...
-Converting to `Weedeater-MonkeyJunction.pdf'...
-Success: compilation successfully completed
-#+end_example
 
 #+begin_src LilyPond :tangle Weedeater-MonkeyJunction.ly
     \version "2.24.3"
@@ -1690,7 +1666,9 @@ Success: compilation successfully completed
 *** Kira May
 ** God Luck and Good Speed (2007)
 *** Wizard Fight
-#+CALL: lilypond(name="Weedeater-WizardFight.ly")
+#+CALL: lilypond2(NAME="Weedeater-WizardFight.ly")
+
+#+RESULTS:
 
 #+begin_src LilyPond :tangle Weedeater-WizardFight.ly
   \version "2.24.3"
